@@ -51,12 +51,14 @@
                             <p class="text-danger">{{ session('error') }}</p>
                         @endif
 
+                        <p class="text-light">do not have account<a href="{{ route('registrationPage') }}">
+                                register</a></p>
                         <div class="row border-top border-secondary">
                             <div class="col-12">
                                 <div class="form-group">
                                     <div class="pt-3">
                                         <button class="btn btn-info" id="to-recover" type="button">
-                                            <i class="mdi mdi-lock fs-4 me-1"></i> Lost password?
+                                            <i class="mdi mdi-lock fs-4 me-1"></i> forget password
                                         </button>
                                         <button class="btn btn-success float-end text-white" type="submit">
                                             conform

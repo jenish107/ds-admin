@@ -15,6 +15,20 @@ class AuthController extends Controller
     {
         return view('login');
     }
+    public function otpPage()
+    {
+        return view('otp');
+    }
+
+    public function registrationPage()
+    {
+        return view('registration');
+    }
+
+    public function dashboardPage()
+    {
+        return view('dashboard');
+    }
 
     public function login(Request $request)
     {
@@ -37,21 +51,6 @@ class AuthController extends Controller
         dispatch(new SendEmailJob($user->toArray(), $otp));
 
         return redirect()->route('otpPage');
-    }
-
-    public function otpPage()
-    {
-        return view('otp');
-    }
-
-    public function registrationPage()
-    {
-        return view('registration');
-    }
-
-    public function dashboardPage()
-    {
-        return view('dashboard');
     }
 
     public function registration(RegistrationRequest $request)
@@ -101,7 +100,6 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-
         return redirect()->route('registrationPage');
     }
 }

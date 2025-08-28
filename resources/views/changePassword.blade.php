@@ -22,44 +22,29 @@
                     <div class="text-center pt-3 pb-3">
                         <span class="db"><img src="../assets/images/logo.png" alt="logo" /></span>
                     </div>
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
+                    @if (session('error'))
+                        <h4 class="alert alert-danger">{{ session('error') }}</h4>
                     @endif
                     <!-- Form -->
-                    <form class="form-horizontal mt-3" action="{{ route('registration') }}" method="POST">
+                    <form class="form-horizontal mt-3" action="{{ route('checkChangePassword') }}" method="POST">
                         @csrf
-
+                        @method('PUT')
                         <div class="row pb-4">
                             <div class="col-12">
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text bg-success text-white h-100" id="basic-addon1"><i
-                                                class="mdi mdi-account fs-4"></i></span>
+                                        <span class="input-group-text bg-warning text-white h-100" id="basic-addon2"><i
+                                                class="mdi mdi-lock fs-4"></i></span>
                                     </div>
-                                    <input type="text" class="form-control form-control-lg" placeholder="Username"
-                                        aria-label="Username" name="userName" aria-describedby="basic-addon1" required />
-                                </div>
-                                <!-- email -->
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text bg-danger text-white h-100" id="basic-addon1"><i
-                                                class="mdi mdi-email fs-4"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control form-control-lg" placeholder="Email Address"
-                                        aria-label="Username" name="email" aria-describedby="basic-addon1" required />
+                                    <input type="text" class="form-control form-control-lg" placeholder="OldPassword"
+                                        aria-label="Password" name="oldPassword" aria-describedby="basic-addon1" required />
                                 </div>
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text bg-warning text-white h-100" id="basic-addon2"><i
                                                 class="mdi mdi-lock fs-4"></i></span>
                                     </div>
-                                    <input type="text" class="form-control form-control-lg" placeholder="Password"
+                                    <input type="text" class="form-control form-control-lg" placeholder="New Password"
                                         aria-label="Password" name="password" aria-describedby="basic-addon1" required />
                                 </div>
                                 <div class="input-group mb-3">
@@ -73,13 +58,14 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="text-light"> already have account<a href="{{ route('loginPage') }}">
-                                login</a></p>
                         <div class="row border-top border-secondary">
                             <div class="col-12">
                                 <div class="form-group">
-                                    <div class="pt-3 d-grid">
-                                        <button class="btn btn-block btn-lg btn-info" type="submit">
+                                    <div class="pt-3 ">
+                                        <a class="btn btn-info" href="{{ route('forgetPasswordPage') }}"> <i
+                                                class="mdi mdi-lock fs-4 me-1"></i> forget
+                                            password</a>
+                                        <button class="btn btn-success float-end text-white" type="submit">
                                             conform
                                         </button>
                                     </div>

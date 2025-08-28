@@ -183,8 +183,8 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic " href="#"
                                 id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{{ asset('assets/images/users/1.jpg') }}" alt="user" class="rounded-circle"
-                                    width="31" />
+                                <img src="{{ Auth::user()->image ? asset('uploads/' . Auth::user()->image) : asset('assets/images/users/1.jpg') }}"
+                                    alt="user" id="userImg" class="rounded-circle" width="31" />
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end user-dd animated" aria-labelledby="navbarDropdown">

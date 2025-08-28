@@ -30,11 +30,36 @@
                                     <div class="custom-file">
                                         <input type="file" name="image" class="custom-file-input"
                                             id="validatedCustomFile" />
-                                        <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+                                        <label class="custom-file-label" for="validatedCustomFile">Choose img...</label>
 
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="form-group row mt-3">
+                                <label for="userName" class="col-md-3">User name</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" name="userName" disabled id="userName"
+                                        placeholder="First Name Here" value="{{ $user->userName }}" />
+                                </div>
+                            </div>
+                            <div class="form-group row mt-3">
+                                <label for="password" class="col-md-3">Password</label>
+                                <div class="col-sm-9">
+                                    <input type="password" disabled class="form-control" name="password" id="password"
+                                        placeholder="First Name Here" value="{{ $user->password }}" />
+                                    <a href="{{ route('changePasswordPage') }}" class="btn border btn-info">change
+                                        password</a>
+                                </div>
+                            </div>
+                            <div class="form-group row mt-3">
+                                <label for="email" class="col-md-3">Email</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" name="email" id="email"
+                                        placeholder="First Name Here" value="{{ $user->email }}" />
+                                </div>
+                            </div>
+
 
                             <div class="form-group row mt-3">
                                 <label for="fname" class="col-md-3">First
@@ -44,6 +69,7 @@
                                         placeholder="First Name Here" value="{{ $user->first_name }}" />
                                 </div>
                             </div>
+
                             <div class="form-group row">
                                 <label for="lname" class="col-md-3">Last
                                     Name</label>
@@ -106,8 +132,8 @@
                             <div class="form-group row">
                                 <label class="col-md-3">Enter zipcode</label>
                                 <div class="col-md-9">
-                                    <input type="text" name="zipcode" value="{{ $user->zipcode }}" class="form-control"
-                                        id="zipcode" placeholder="Enter zipcode" />
+                                    <input type="text" name="zipcode" value="{{ $user->zipcode }}"
+                                        class="form-control" id="zipcode" placeholder="Enter zipcode" />
                                 </div>
                             </div>
 

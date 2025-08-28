@@ -1,7 +1,7 @@
 @extends('layout.mainLayout')
 
 @section('main')
-    <x-otp-page routeName="confirmOtp" />
+    <x-otp-page routeName="newPasswordForm" />
 @endsection
 
 @push('scripts')

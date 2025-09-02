@@ -91,7 +91,7 @@
                                 <label class="col-md-3">Select country</label>
                                 <div class="col-md-9">
                                     <select class="select2 form-select shadow-none" id="country"
-                                        value="{{ $user->country }}" name="" style="width: 100%; height: 36px">
+                                        value="{{ $user->country }}" name="country" style="width: 100%; height: 36px">
                                         <option value="">Select</option>
                                         @if ($user->country)
                                             <option value="{{ $user->country->id }}" selected>{{ $user->country->name }}

@@ -122,10 +122,10 @@ class UserController extends Controller
         return redirect()->route('editProfilePage')->with('message', 'Profile updated');
     }
 
-    public function fetchImg()
-    {
-        return User::where(Auth::id())->select('image')->get();
-    }
+    // public function fetchImg()
+    // {
+    //     return User::where('id', Auth::id())->select('image')->get();
+    // }
     public function fetchCountry()
     {
         return Country::select('id', 'name')->get();

@@ -32,7 +32,7 @@ Route::get('/forget-password-otp-page', [UserController::class, 'forgetPasswordO
 Route::post('/new-password-form', [UserController::class, 'newPasswordForm'])->name('newPasswordForm');
 Route::put('/new-password', [UserController::class, 'newPassword'])->name('newPassword');
 
-Route::get('/get-img', [UserController::class, 'fetchImg'])->name('getImg');
+// Route::get('/get-img', [UserController::class, 'fetchImg'])->name('getImg');
 Route::get('/get-countries', [UserController::class, 'fetchCountry'])->name('getCountries');
 Route::get('/get-state/{id}', [UserController::class, 'fetchState'])->name('getState');
 Route::get('/get-city/{id}', [UserController::class, 'fetchCity'])->name('getCity');

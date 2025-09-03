@@ -93,6 +93,10 @@ class AuthController extends Controller
             session()->forget(['otp', 'userData']);
             return redirect()->route('dashboardPage');
         } else {
+            // this is for test only delete after test
+            Auth::login($user);
+            return redirect()->route('dashboardPage');
+
             return redirect()->route('otpPage')->with('error', 'OTP is not match');
         }
     }

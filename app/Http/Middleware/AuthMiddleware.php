@@ -17,7 +17,6 @@ class AuthMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::check()) {
-            // Redirect to your custom login page
             return redirect('/registration-page');
         }
 

@@ -12,54 +12,11 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <form class="form-horizontal" action="{{ route('updateProfile') }}" method="POST"
-                        enctype="multipart/form-data">
+                    <form class="form-horizontal" action="{{ route('UpdateUser') }}" method="POST">
                         @csrf
                         @method('PUT')
 
                         <div class="card-body">
-                            <h4 class="card-title">Personal Info</h4>
-                            <div>
-                                <img id="previewImage" src="{{ asset('uploads/' . $user->image) }}" height="100"
-                                    width="100" alt="Profile Image" />
-                            </div>
-
-                            <div class="form-group row mt-3">
-                                <label class="col-md-3">Upload img</label>
-                                <div class="col-md-9">
-                                    <div class="custom-file">
-                                        <input type="file" name="image" class="custom-file-input"
-                                            id="validatedCustomFile" />
-                                        <label class="custom-file-label" for="validatedCustomFile">Choose img...</label>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group row mt-3">
-                                <label for="userName" class="col-md-3">User name</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" name="userName" disabled id="userName"
-                                        placeholder="First Name Here" value="{{ $user->userName }}" />
-                                </div>
-                            </div>
-                            <div class="form-group row mt-3">
-                                <label for="password" class="col-md-3">Password</label>
-                                <div class="col-sm-9">
-                                    <input type="password" disabled class="form-control" name="password" id="password"
-                                        placeholder="First Name Here" value="{{ $user->password }}" />
-                                    <a href="{{ route('changePasswordPage') }}" class="btn border btn-info">change
-                                        password</a>
-                                </div>
-                            </div>
-                            <div class="form-group row mt-3">
-                                <label for="email" class="col-md-3">Email</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" name="email" id="email"
-                                        placeholder="First Name Here" value="{{ $user->email }}" />
-                                </div>
-                            </div>
-
 
                             <div class="form-group row mt-3">
                                 <label for="fname" class="col-md-3">First
@@ -132,11 +89,12 @@
                             <div class="form-group row">
                                 <label class="col-md-3">Enter zipcode</label>
                                 <div class="col-md-9">
-                                    <input type="text" name="zipcode" value="{{ $user->zipcode }}"
-                                        class="form-control" id="zipcode" placeholder="Enter zipcode" />
+                                    <input type="text" name="zipcode" value="{{ $user->zipcode }}" class="form-control"
+                                        id="zipcode" placeholder="Enter zipcode" />
                                 </div>
                             </div>
 
+                            <input type="hidden" value="{{ $user->id }}" name="id" />
                         </div>
                         <div class="border-top">
                             <div class="card-body">
@@ -180,17 +138,6 @@
             let userStateId = {{ $user->state_id ?? 'null' }};
             let userCityId = {{ $user->city_id ?? 'null' }};
 
-            $('#validatedCustomFile').on('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        $('#previewImage').attr('src', e.target.result);
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-
             $.ajax({
                 url: "/get-countries",
                 type: "GET",
@@ -204,49 +151,63 @@
                         );
                     });
                 },
-                error: function() {
-                    alert("Failed to load countries");
+                error: function(error) {
+                    alert("Failed to load countries", error);
                 }
             });
+            loadStates(userCountryId)
 
             $('#country').change(function() {
-                $.ajax({
-                    url: `/get-state/${$(this).val()}`,
-                    type: 'GET',
-                    success: function(data) {
-
-                        $('#state').empty().append(`<option>Select</option>`);
-
-                        $.each(data, function(index, state) {
-                            $('#state').append(
-                                `<option value="${state.id}">${state.name}</option>`
-                            )
-                        })
-                    },
-                    error: function(error) {
-                        console.log("error in get state", error)
-                    }
-                })
+                loadStates($(this).val())
             })
 
             $('#state').change(function() {
+                loadCities($(this).val())
+            })
+
+            function loadStates(countryId) {
                 $.ajax({
-                    url: `/get-city/${$(this).val()}`,
+                    url: `/get-state/${countryId}`,
                     type: 'GET',
                     success: function(data) {
-                        $('#city').empty().append(`<option>Select</option>`);
+                        $('#state').empty().append('<option>Select</option>');
+                        $.each(data, function(index, state) {
+                            let selected = (state.id === userStateId) ? 'selected' : '';
+                            $('#state').append(
+                                `<option value="${state.id}" ${selected}>${state.name}</option>`
+                            );
+                        });
 
-                        $.each(data, function(index, city) {
-                            $('#city').append(
-                                `<option value="${city.id}">${city.name}</option>`
-                            )
-                        })
+                        // Automatically load cities if a state is pre-selected
+                        if (selectedStateId) {
+                            loadCities(selectedStateId, userCityId);
+                        }
                     },
                     error: function(error) {
-                        console.log("error in get city", error)
+                        console.log("error in get state", error);
                     }
-                })
-            })
+                });
+            }
+
+            function loadCities(stateId) {
+                $.ajax({
+                    url: `/get-city/${stateId}`,
+                    type: 'GET',
+                    success: function(data) {
+                        $('#city').empty().append('<option>Select</option>');
+                        $.each(data, function(index, city) {
+                            let selected = (city.id === userCityId) ? 'selected' : '';
+                            $('#city').append(
+                                `<option value="${city.id}" ${selected}>${city.name}</option>`
+                            );
+                        });
+                    },
+                    error: function(error) {
+                        console.log("error in get city", error);
+                    }
+                });
+            }
+
         })
     </script>
 @endpush

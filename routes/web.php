@@ -36,3 +36,12 @@ Route::put('/new-password', [UserController::class, 'newPassword'])->name('newPa
 Route::get('/get-countries', [UserController::class, 'fetchCountry'])->name('getCountries');
 Route::get('/get-state/{id}', [UserController::class, 'fetchState'])->name('getState');
 Route::get('/get-city/{id}', [UserController::class, 'fetchCity'])->name('getCity');
+
+//-----------user data ------
+Route::get('/get-all-user', [UserController::class, 'allUser'])->name('getAllUser');
+Route::get('/user-data', [UserController::class, 'showUser'])->name('showAllUser');
+Route::delete('/delete-user/{id}', [UserController::class, 'deleteUser'])->name('deleteUser');
+Route::get('/show-update-user/{id}', [UserController::class, 'showUpdateUser'])->name('showUpdateUser');
+Route::put('/update-user', [UserController::class, 'UpdateUser'])->name('UpdateUser');
+
+//-----companies ----

@@ -126,6 +126,39 @@ class UserController extends Controller
     // {
     //     return User::where('id', Auth::id())->select('image')->get();
     // }
+    public function allUser()
+    {
+        return User::with(['city', 'country', 'state'])->get();
+    }
+    public function deleteUser($id)
+    {
+        return User::where('id', $id)->delete();
+    }
+    public function showUpdateUser($id)
+    {
+        $user = User::find($id);
+        return view('editUser', compact('user'));
+    }
+    public function UpdateUser(Request $request)
+    {
+        User::where('id', $request->input('id'))->update([
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'number' => $request->input('number'),
+            'country_id' => $request->input('country'),
+            'state_id' => $request->input('state'),
+            'city_id' => $request->input('city'),
+            'zipcode' => $request->input('zipcode'),
+        ]);
+
+        return redirect()->route('showAllUser');
+    }
+
+    public function showUser()
+    {
+        return view('userData');
+    }
+
     public function fetchCountry()
     {
         return Country::select('id', 'name')->get();

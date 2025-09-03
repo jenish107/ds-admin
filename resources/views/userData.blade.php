@@ -35,19 +35,6 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/extra-libs/sparkline/sparkline.js') }}"></script>
-    <!--Wave Effects -->
-    <script src="{{ asset('dist/js/waves.js') }}"></script>
-    <!--Menu sidebar -->
-    <script src="{{ asset('dist/js/sidebarmenu.js') }}"></script>
-    <!--Custom JavaScript -->
-    <script src="{{ asset('dist/js/custom.min.js') }}"></script>
-    <!-- this page js -->
-    <script src="{{ asset('assets/extra-libs/multicheck/datatable-checkbox-init.js') }}"></script>
-    <script src="{{ asset('assets/extra-libs/multicheck/jquery.multicheck.js') }}"></script>
-    <script src="{{ asset('assets/extra-libs/DataTables/datatables.min.js') }}"></script>
-
     <script>
         $(document).ready(function() {
 
@@ -57,7 +44,7 @@
                 contentType: 'application/json',
                 success: function(response) {
                     response.map(user => {
-                        var currRow = $(`<tr></tr>`);
+                        var currRow = $(`<tr id='table-row-${user.id}'></tr>`);
 
                         currRow.append(`<td>${user?.id}</td>`);
                         currRow.append(`<td>${user?.first_name}</td>`);
@@ -90,7 +77,6 @@
                         `);
 
                         $('#table-body').append(currRow);
-
                     });
                 },
                 error: function(xhr, status, error) {
@@ -100,7 +86,6 @@
 
             $(document).on('click', '.delete_btn', function() {
                 let id = $(this).data('id');
-                console.log("Delete user:", id);
 
                 $.ajax({
                     url: `/delete-user/${id}`,
@@ -110,25 +95,7 @@
                     },
                     success: function(response) {
                         console.log("user is deleted");
-                    },
-                    error: function(xhr, status, error) {
-                        console.log('Error :' + xhr.responseText);
-                    }
-                })
-            });
-
-            $(document).on('click', '.edit_btn', function() {
-                let id = $(this).data('id');
-                console.log("Delete user:", id);
-
-                $.ajax({
-                    url: `/delete-user/${id}`,
-                    type: 'PUT',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        console.log("user is deleted");
+                        $(`#table-row-${id}`).remove();
                     },
                     error: function(xhr, status, error) {
                         console.log('Error :' + xhr.responseText);

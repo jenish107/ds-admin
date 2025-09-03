@@ -268,8 +268,8 @@
                                 </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="form-wizard.html" class="sidebar-link"><i class="mdi mdi-receipt"></i><span
-                                    class="hide-menu"> Companies
+                            <a href="{{ route('showAllCompanies') }}" class="sidebar-link"><i
+                                    class="mdi mdi-receipt"></i><span class="hide-menu"> Companies
                                 </span></a>
                         </li>
 

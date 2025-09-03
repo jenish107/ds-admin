@@ -126,6 +126,23 @@ class UserController extends Controller
     // {
     //     return User::where('id', Auth::id())->select('image')->get();
     // }
+
+    public function fetchCountry()
+    {
+        return Country::select('id', 'name')->get();
+    }
+    public function fetchState($id)
+    {
+        $country = Country::select('id', 'name')->where('id', $id)->with('states')->get();
+        return $country[0]->states;
+    }
+    public function fetchCity($id)
+    {
+        $state = State::select('id', 'name')->where('id', $id)->with('cities')->get();
+        return $state[0]->cities;
+    }
+
+    //handle user
     public function allUser()
     {
         return User::with(['city', 'country', 'state'])->get();
@@ -157,20 +174,5 @@ class UserController extends Controller
     public function showUser()
     {
         return view('userData');
-    }
-
-    public function fetchCountry()
-    {
-        return Country::select('id', 'name')->get();
-    }
-    public function fetchState($id)
-    {
-        $country = Country::select('id', 'name')->where('id', $id)->with('states')->get();
-        return $country[0]->states;
-    }
-    public function fetchCity($id)
-    {
-        $state = State::select('id', 'name')->where('id', $id)->with('cities')->get();
-        return $state[0]->cities;
     }
 }

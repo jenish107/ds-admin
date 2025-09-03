@@ -3,7 +3,6 @@
 @push('style')
     <link href="{{ asset('assets/libs/flot/css/float-chart.css') }} " rel="stylesheet" />
 @endpush
-
 @section('main')
     <x-layout>
         <div class="card">
@@ -46,7 +45,7 @@
 
 @push('scripts')
     <script>
-        var companyId = companyId;
+        var companyId = {{ $companyId }};
 
         function addRow(data) {
             $('#table-body').empty();
@@ -61,7 +60,7 @@
                                  <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
                            </a>
 
-                            <a href="show-update-companies-form/${department.id}">
+                            <a href="/show-update-department-form/${department.id}/${companyId}">
                                 <button
                                 type="button"
                                 data-id='${department?.id}'
@@ -99,6 +98,7 @@
             })
         }
         $(document).ready(function() {
+            console.log("company id --", companyId)
             loadAllData();
 
             $(document).on('click', '.delete_btn', function() {

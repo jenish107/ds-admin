@@ -29,7 +29,7 @@
                         <label for="email" class="col-md-3">Email</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" value="{{ $obj->email ?? '' }}" name="email"
-                                id="email" placeholder="Last Name Here" />
+                                id="email" placeholder="email " />
                             @error('email')
                                 <div>
                                     {{ $message }}
@@ -37,7 +37,9 @@
                             @enderror
                         </div>
                     </div>
-
+                    @if ($parentId)
+                        <input type="hidden" value="{{ $parentId ?? '' }}" name="parentId" />
+                    @endif
                     <input type="hidden" value="{{ $obj->id ?? '' }}" name="id" />
                 </div>
                 <div class="border-top">

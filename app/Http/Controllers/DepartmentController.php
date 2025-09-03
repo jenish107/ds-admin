@@ -9,7 +9,7 @@ class DepartmentController extends Controller
 {
     public function allDepartment($companyId)
     {
-        return Department::with('company')->get();
+        return Department::with('company')->where('company_id', $companyId)->get();
     }
     public function showDepartment($companyId)
     {
@@ -17,12 +17,12 @@ class DepartmentController extends Controller
     }
     public function showDepartmentForm($companyId)
     {
-        return view('department.form', ['companyId' => $companyId]);
+        return view('department.form', ["companyId" => $companyId]);
     }
-    public function showUpdateDepartmentForm($id)
+    public function showUpdateDepartmentForm($id, $companyId)
     {
         $department = Department::find($id);
-        return view('department.form', compact('department'));
+        return view('department.form', compact('department', 'companyId'));
     }
 
     public function updateDepartment(Request $request)
@@ -36,7 +36,7 @@ class DepartmentController extends Controller
             'name' => $request->input('name'),
             'email' => $request->input('email'),
         ]);
-        return redirect()->route('showAllDepartment');
+        return redirect()->route('showAllDepartment', $request->input('parentId'));
     }
 
     public function createDepartment(Request $request)
@@ -45,13 +45,12 @@ class DepartmentController extends Controller
             'name' => 'required',
             'email' => 'required',
         ]);
-
         Department::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
-            // 'company_id'=>
+            'company_id' => $request->input('parentId')
         ]);
-        return redirect()->route('showAllDepartment');
+        return redirect()->route('showAllDepartment', $request->input('parentId'));
     }
 
     public function searchDepartment($name)

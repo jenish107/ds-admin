@@ -60,7 +60,7 @@ Route::middleware('IsLogin')->group(function () {
     Route::get('/department-data/{companyId}', [DepartmentController::class, 'showDepartment'])->name('showAllDepartment');
     Route::get('/show-department-form/{companyId}', [DepartmentController::class, 'showDepartmentForm'])->name('showDepartmentForm');
     Route::post('/add-department', [DepartmentController::class, 'createDepartment'])->name('addDepartment');
-    Route::get('/show-update-department-form/{id}', [DepartmentController::class, 'showUpdateDepartmentForm'])->name('showUpdateDepartmentForm');
+    Route::get('/show-update-department-form/{id}/{companyId}', [DepartmentController::class, 'showUpdateDepartmentForm'])->name('showUpdateDepartmentForm');
     Route::put('/update-department', [DepartmentController::class, 'updateDepartment'])->name('updateDepartment');
     Route::get('/search-department/{name}', [DepartmentController::class, 'searchDepartment'])->name('searchDepartment');
     Route::delete('/delete-department/{id}', [DepartmentController::class, 'deleteDepartment'])->name('deleteDepartment');

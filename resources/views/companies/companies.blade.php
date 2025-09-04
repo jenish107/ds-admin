@@ -10,14 +10,26 @@
             <div class="card-body">
                 <h5 class="card-title">Users All Information</h5>
 
-                <div class="input-group d-flex justify-content-end my-3">
-                    <div class="form-outline" data-mdb-input-init>
-                        <input type="search" name="search" id="search" placeholder="search hear" class="form-control" />
-                        <label hidden class="form-label" for="search">Search</label>
+                <div class="input-group d-flex justify-content-between my-3">
+                    <div>
+                        <select name="rowNumber" id="rowNumber">
+                            <option value="2">2</option>
+                            <option value="4">4</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                        </select>
                     </div>
-                    <button type="button" class="btn btn-primary" data-mdb-ripple-init>
-                        <i class="fas fa-search"></i>
-                    </button>
+                    <div class="d-flex">
+                        <div class="form-outline" data-mdb-input-init>
+                            <input type="search" name="search" id="search" placeholder="search hear"
+                                class="form-control" />
+                            <label hidden class="form-label" for="search">Search</label>
+                        </div>
+                        <button type="button" class="btn btn-primary" data-mdb-ripple-init>
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="d-flex align-items-end justify-content-end mb-3">
@@ -39,8 +51,19 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="d-flex justify-content-center">
+                    <nav>
+                        <ul class="pagination" id="pagination">
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
+
+        <x-slot:breadcrumb>
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+        </x-slot:breadcrumb>
     </x-layout>
 @endsection
 
@@ -83,21 +106,61 @@
             });
         }
 
-        function loadAllData() {
+        function loadAllData($url = "/get-all-companies/2") {
             $.ajax({
-                url: '/get-all-companies',
+                url: $url,
                 type: 'GET',
                 contentType: 'application/json',
                 success: function(response) {
-                    addRow(response)
+                    addRow(response['data'])
+
+                    $('#pagination').empty();
+
+                    $('#pagination').append(`
+                                <li class="page-item" id="prev_page_item">
+                                    <a href="#" class="page-link" id="prev_page">Previous</a>
+                                </li>`);
+                    $('#pagination').append(
+                        `<li class="p-2 pb-1 border border-light-subtle" id="page-number">${response.current_page}</li>`
+                    );
+                    $('#pagination').append(`
+                                <li class="page-item" id="next_page_item">
+                                    <a href="#" class="page-link" id="next_page">Next</a>
+                                </li>`);
+
+                    if (response.prev_page_url) {
+                        $('#prev_page').data('url', response.prev_page_url)
+                    } else {
+                        $('#prev_page_item').addClass('disabled')
+                    }
+
+                    if (response.next_page_url) {
+                        $('#next_page').data('url', response.next_page_url)
+                    } else {
+                        $('#next_page_item').addClass('disabled')
+                    }
+
                 },
                 error: function(xhr, status, error) {
                     alert('Error :' + xhr.responseText);
                 }
             })
         }
+
         $(document).ready(function() {
             loadAllData();
+
+            $(document).on('click', '#pagination a', function() {
+                let url = $(this).data('url');
+                if (url) {
+                    loadAllData(url);
+                }
+            });
+
+            $("#rowNumber").change(function() {
+                let rowNumber = $(this).val()
+                loadAllData(`/get-all-companies/${rowNumber}`)
+            })
 
             $(document).on('click', '.delete_btn', function() {
                 let id = $(this).data('id');

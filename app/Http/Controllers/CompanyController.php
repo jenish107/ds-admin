@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
-    public function allCompanies()
+    public function allCompanies($rowNumber)
     {
-        return Company::get();
+        return Company::simplePaginate($rowNumber);
     }
     public function showCompanies()
     {

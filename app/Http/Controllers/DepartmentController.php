@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
-    public function allDepartment($companyId)
+    public function allDepartment($companyId, $rowNumber)
     {
-        return Department::with('company')->where('company_id', $companyId)->get();
+        return Department::with('company')->where('company_id', $companyId)->simplePaginate($rowNumber);
     }
     public function showDepartment($companyId)
     {

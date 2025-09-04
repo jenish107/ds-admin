@@ -24,13 +24,14 @@
                         <b class="logo-icon ps-2">
                             <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
                             <!-- Dark Logo icon -->
-                            <img src="../assets/images/logo-icon.png" alt="homepage" class="light-logo" width="25" />
+                            <img src="{{ asset('assets/images/logo-icon.png') }}" alt="homepage" class="light-logo"
+                                width="25" />
                         </b>
                         <!--End Logo icon -->
                         <!-- Logo text -->
                         <span class="logo-text ms-2">
                             <!-- dark Logo text -->
-                            <img src="../assets/images/logo-text.png" alt="homepage" class="light-logo" />
+                            {{-- <img src="{{ asset('assets/images/logo-icon.png') }}" alt="homepage" class="light-logo" /> --}}
                         </span>
                     </a>
                     <a class="nav-toggler waves-effect waves-light d-block d-md-none" href="javascript:void(0)"><i

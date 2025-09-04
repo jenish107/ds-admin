@@ -2,18 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\Employ;
 use Illuminate\Http\Request;
 
 class EmployController extends Controller
 {
-    public function allEmploy($departmentId, $rowNumber)
+    public function allEmploy($departmentId, $rowNumber, $name = null)
     {
-        return Employ::with('company')->where('company_id', $departmentId)->simplePaginate($rowNumber);
+        if ($name == null) {
+            return Employ::with('department')->where('department_id', $departmentId)->simplePaginate($rowNumber);
+        }
+        return Employ::with('department')->where('department_id', $departmentId)->where('name', 'like', "%$name%")->simplePaginate($rowNumber);
     }
     public function showEmploy($departmentId)
     {
-        return view('employ.employ', ['departmentId' => $departmentId]);
+        $id = Department::where('id', $departmentId)->select('company_id')->first();
+        return view('employ.employ', ['departmentId' => $departmentId, 'companyId' => $id->company_id ?? null]);
     }
     public function showEmployForm($departmentId)
     {
@@ -48,7 +53,7 @@ class EmployController extends Controller
         Employ::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
-            'company_id' => $request->input('parentId')
+            'department_id' => $request->input('parentId')
         ]);
         return redirect()->route('showAllEmploy', $request->input('parentId'));
     }

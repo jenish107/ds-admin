@@ -7,9 +7,12 @@ use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
-    public function allCompanies($rowNumber)
+    public function allCompanies($rowNumber, $name = null)
     {
-        return Company::simplePaginate($rowNumber);
+        if ($name == null) {
+            return Company::simplePaginate($rowNumber);
+        }
+        return Company::where('name', 'like', "%$name%")->simplePaginate($rowNumber);
     }
     public function showCompanies()
     {

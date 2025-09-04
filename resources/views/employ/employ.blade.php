@@ -7,9 +7,9 @@
     <x-layout>
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Department All Information</h5>
+                <h5 class="card-title">Employ All Information</h5>
 
-                <div class="input-group d-flex justify-content-end my-3">
+                <div class="input-group d-flex justify-content-between my-3">
                     <div>
                         <select name="rowNumber" id="rowNumber">
                             <option value="2">2</option>
@@ -22,7 +22,7 @@
 
                     <div class="d-flex">
                         <div class="form-outline" data-mdb-input-init>
-                            <input type="search" name="search" id="search" placeholder="search hear"
+                            <input type="search" name="search" id="search" placeholder="search here"
                                 class="form-control" />
                             <label hidden class="form-label" for="search">Search</label>
                         </div>
@@ -33,8 +33,8 @@
                 </div>
 
                 <div class="d-flex align-items-end justify-content-end mb-3">
-                    <a href="{{ route('showDepartmentForm', $companyId) }}" class="btn btn-success text-light">add new
-                        department</a>
+                    <a href="{{ route('showEmployForm', $departmentId) }}" class="btn btn-success text-light">add new
+                        employ</a>
                 </div>
                 <div class="table-responsive">
                     <table id="zero_config" class="table table-striped table-bordered">
@@ -63,8 +63,11 @@
 
         <x-slot:breadcrumb>
             <li class="breadcrumb-item"><a href="{{ route('showAllCompanies') }}">Home</a></li>
+            <li class="breadcrumb-item" aria-current="page">
+                <a href="{{ route('showAllDepartment', $companyId) }}">department</a>
+            </li>
             <li class="breadcrumb-item active" aria-current="page">
-                department
+                employ
             </li>
         </x-slot:breadcrumb>
     </x-layout>
@@ -72,25 +75,27 @@
 
 @push('scripts')
     <script>
-        var companyId = {{ $companyId }};
+        var departmentId = {{ $departmentId }};
+        let rowNumber = 2;
+        let name = undefined;
 
         function addRow(data) {
             $('#table-body').empty();
-            data.map(department => {
-                var currRow = $(`<tr id='table-row-${department.id}'></tr>`);
-                currRow.append(`<td>${department?.id}</td>`);
-                currRow.append(`<td>${department?.name}</td>`);
-                currRow.append(`<td>${department?.email}</td>`);
+            data.map(employ => {
+                var currRow = $(`<tr id='table-row-${employ.id}'></tr>`);
+                currRow.append(`<td>${employ?.id}</td>`);
+                currRow.append(`<td>${employ?.name}</td>`);
+                currRow.append(`<td>${employ?.email}</td>`);
                 currRow.append(`
                         <td> 
-                            <a href="show-update-department/${department.id}">
+                            <a href="/family-data/${employ.id}">
                                  <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
                            </a>
 
-                            <a href="/show-update-department-form/${department.id}/${companyId}">
+                            <a href="/show-update-employ-form/${employ.id}/${departmentId}">
                                 <button
                                 type="button"
-                                data-id='${department?.id}'
+                                data-id='${employ?.id}'
                                 class="btn btn-success btn-sm text-white edit_btn"
                                 >
                                     Edit
@@ -99,7 +104,7 @@
                             
                             <button
                             type="button"
-                            data-id='${department?.id}'
+                            data-id='${employ?.id}'
                             class="btn btn-danger btn-sm text-white delete_btn"
                             >
                                 delete
@@ -111,13 +116,15 @@
             });
         }
 
-        function loadAllData($url = `/get-all-department/${companyId}/2`) {
+        function loadAllData($url = `/get-all-employ/${departmentId}/2`) {
+            if (name) {
+                $url = `/get-all-employ/${departmentId}/${rowNumber}/${name}`;
+            }
             $.ajax({
                 url: $url,
                 type: 'GET',
                 contentType: 'application/json',
                 success: function(response) {
-                    console.log('response --', response);
                     addRow(response['data']);
                     $('#pagination').empty();
 
@@ -155,8 +162,8 @@
             loadAllData();
 
             $("#rowNumber").change(function() {
-                let rowNumber = $(this).val()
-                loadAllData(`/get-all-department/${companyId}/${rowNumber}`)
+                rowNumber = $(this).val()
+                loadAllData(`/get-all-employ/${departmentId}/${rowNumber}`)
             })
 
             $(document).on('click', '#pagination a', function() {
@@ -170,7 +177,7 @@
                 let id = $(this).data('id');
 
                 $.ajax({
-                    url: `/delete-companies/${id}`,
+                    url: `/delete-employ/${id}`,
                     type: 'DELETE',
                     data: {
                         _token: '{{ csrf_token() }}'
@@ -186,22 +193,9 @@
 
             //search
             $('#search').keyup(function() {
-                var name = $(this).val();
+                name = $(this).val();
 
-                if (name == "") {
-                    loadAllData();
-                } else {
-                    $.ajax({
-                        url: `/search-department/${name}`,
-                        type: 'GET',
-                        success: function(response) {
-                            addRow(response)
-                        },
-                        error: function(xhr, status, error) {
-                            console.log('Error in search', xhr.responseText)
-                        }
-                    })
-                }
+                loadAllData();
             })
         });
     </script>

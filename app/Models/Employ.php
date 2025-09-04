@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Employ extends Model
 {
+    public $fillable = ['name', 'email', 'department_id'];
+
     public function department()
     {
         return $this->belongsTo(Department::class);

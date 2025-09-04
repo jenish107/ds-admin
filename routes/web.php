@@ -5,7 +5,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployController;
+use App\Http\Controllers\FamilyController;
 use App\Http\Controllers\UserController;
+use App\Models\Employ;
 
 //auth
 Route::get('/registration-page', [AuthController::class, 'registrationPage'])->name('registrationPage');
@@ -47,32 +49,38 @@ Route::middleware('IsLogin')->group(function () {
     Route::put('/update-user', [UserController::class, 'UpdateUser'])->name('UpdateUser');
 
     //-----companies ----
-    Route::get('/get-all-companies/{rowNumber}', [CompanyController::class, 'allCompanies'])->name('getAllCompanies');
+    Route::get('/get-all-companies/{rowNumber}/{name?}', [CompanyController::class, 'allCompanies'])->name('getAllCompanies');
     Route::get('/companies-data', [CompanyController::class, 'showCompanies'])->name('showAllCompanies');
     Route::get('/show-companies-form', [CompanyController::class, 'showCompaniesForm'])->name('showCompaniesForm');
     Route::post('/add-companies', [CompanyController::class, 'createCompanies'])->name('addCompanies');
     Route::get('/show-update-companies-form/{id}', [CompanyController::class, 'showUpdateCompaniesForm'])->name('showUpdateCompaniesForm');
     Route::put('/update-companies', [CompanyController::class, 'updateCompanies'])->name('updateCompanies');
-    Route::get('/search-companies/{name}', [CompanyController::class, 'searchCompanies'])->name('searchCompanies');
     Route::delete('/delete-companies/{id}', [CompanyController::class, 'deleteCompanies'])->name('deleteCompanies');
 
     //-----department ----
-    Route::get('/get-all-department/{companyId}/{rowNumber}', [DepartmentController::class, 'allDepartment'])->name('getAllDepartment');
+    Route::get('/get-all-department/{companyId}/{rowNumber}/{name?}', [DepartmentController::class, 'allDepartment'])->name('getAllDepartment');
     Route::get('/department-data/{companyId}', [DepartmentController::class, 'showDepartment'])->name('showAllDepartment');
     Route::get('/show-department-form/{companyId}', [DepartmentController::class, 'showDepartmentForm'])->name('showDepartmentForm');
     Route::post('/add-department', [DepartmentController::class, 'createDepartment'])->name('addDepartment');
     Route::get('/show-update-department-form/{id}/{companyId}', [DepartmentController::class, 'showUpdateDepartmentForm'])->name('showUpdateDepartmentForm');
     Route::put('/update-department', [DepartmentController::class, 'updateDepartment'])->name('updateDepartment');
-    Route::get('/search-department/{name}', [DepartmentController::class, 'searchDepartment'])->name('searchDepartment');
     Route::delete('/delete-department/{id}', [DepartmentController::class, 'deleteDepartment'])->name('deleteDepartment');
 
     //-----employ ----
-    Route::get('/get-all-employ/{departmentId}/{rowNumber}', [EmployController::class, 'allEmploy'])->name('getAllEmploy');
+    Route::get('/get-all-employ/{departmentId}/{rowNumber}/{name?}', [EmployController::class, 'allEmploy'])->name('getAllEmploy');
     Route::get('/employ-data/{departmentId}', [EmployController::class, 'showEmploy'])->name('showAllEmploy');
     Route::get('/show-employ-form/{departmentId}', [EmployController::class, 'showEmployForm'])->name('showEmployForm');
     Route::post('/add-employ', [EmployController::class, 'createEmploy'])->name('addEmploy');
     Route::get('/show-update-employ-form/{id}/{departmentId}', [EmployController::class, 'showUpdateEmployForm'])->name('showUpdateEmployForm');
     Route::put('/update-employ', [EmployController::class, 'updateEmploy'])->name('updateEmploy');
-    Route::get('/search-employ/{name}', [EmployController::class, 'searchEmploy'])->name('searchEmploy');
     Route::delete('/delete-employ/{id}', [EmployController::class, 'deleteEmploy'])->name('deleteEmploy');
+
+    //-----family ----
+    Route::get('/get-all-family/{employId}/{rowNumber}/{name?}', [FamilyController::class, 'allFamily'])->name('getAllFamily');
+    Route::get('/family-data/{employId}', [FamilyController::class, 'showFamily'])->name('showAllFamily');
+    Route::get('/show-family-form/{employId}', [FamilyController::class, 'showFamilyForm'])->name('showFamilyForm');
+    Route::post('/add-family', [FamilyController::class, 'createFamily'])->name('addFamily');
+    Route::get('/show-update-family-form/{id}/{employId}', [FamilyController::class, 'showUpdateFamilyForm'])->name('showUpdateFamilyForm');
+    Route::put('/update-family', [FamilyController::class, 'updateFamily'])->name('updateFamily');
+    Route::delete('/delete-family/{id}', [FamilyController::class, 'deleteFamily'])->name('deleteFamily');
 });

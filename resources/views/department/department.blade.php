@@ -9,7 +9,7 @@
             <div class="card-body">
                 <h5 class="card-title">Department All Information</h5>
 
-                <div class="input-group d-flex justify-content-end my-3">
+                <div class="input-group d-flex justify-content-between my-3">
                     <div>
                         <select name="rowNumber" id="rowNumber">
                             <option value="2">2</option>
@@ -73,6 +73,8 @@
 @push('scripts')
     <script>
         var companyId = {{ $companyId }};
+        let rowNumber = 2;
+        let name = undefined;
 
         function addRow(data) {
             $('#table-body').empty();
@@ -83,7 +85,7 @@
                 currRow.append(`<td>${department?.email}</td>`);
                 currRow.append(`
                         <td> 
-                            <a href="show-update-department/${department.id}">
+                            <a href="/employ-data/${department.id}">
                                  <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
                            </a>
 
@@ -112,6 +114,10 @@
         }
 
         function loadAllData($url = `/get-all-department/${companyId}/2`) {
+            if (name) {
+                $url = `/get-all-department/${companyId}/${rowNumber}/${name}`;
+                console.log('name  ---', $url)
+            }
             $.ajax({
                 url: $url,
                 type: 'GET',
@@ -170,7 +176,7 @@
                 let id = $(this).data('id');
 
                 $.ajax({
-                    url: `/delete-companies/${id}`,
+                    url: `/delete-department/${id}`,
                     type: 'DELETE',
                     data: {
                         _token: '{{ csrf_token() }}'
@@ -186,22 +192,8 @@
 
             //search
             $('#search').keyup(function() {
-                var name = $(this).val();
-
-                if (name == "") {
-                    loadAllData();
-                } else {
-                    $.ajax({
-                        url: `/search-department/${name}`,
-                        type: 'GET',
-                        success: function(response) {
-                            addRow(response)
-                        },
-                        error: function(xhr, status, error) {
-                            console.log('Error in search', xhr.responseText)
-                        }
-                    })
-                }
+                name = $(this).val();
+                loadAllData();
             })
         });
     </script>

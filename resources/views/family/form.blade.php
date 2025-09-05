@@ -7,9 +7,9 @@
 @section('main')
     <x-layout>
         @isset($family)
-            <x-form routeName="updateFamily" :parentId="$employId" :obj="$family" />
+            <x-form name="Family" routeName="updateFamily" :parentId="$employId" :obj="$family" />
         @else
-            <x-form routeName="addFamily" :parentId="$employId" />
+            <x-form name="Family" routeName="addFamily" :parentId="$employId" />
         @endisset
     </x-layout>
 @endsection

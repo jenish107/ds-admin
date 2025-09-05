@@ -74,10 +74,6 @@ class DepartmentController extends Controller
         return redirect()->route('showAllDepartment', $request->input('parentId'));
     }
 
-    public function searchDepartment($name)
-    {
-        return Department::where('name', 'like', "%$name%")->get();
-    }
     public function deleteDepartment($id)
     {
         return Department::where('id', $id)->delete();

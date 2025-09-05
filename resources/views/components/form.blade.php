@@ -5,14 +5,29 @@
 <div class="row">
     <div class="col-md-12">
         <div class="card">
+
             <form class="form-horizontal" action="{{ route($routeName) }}" method="POST">
                 @csrf
                 @if ($obj)
                     @method('PUT')
                 @endif
-                <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="mt-2 ms-2">
+                        @if ($obj)
+                            Update {{ $name }}
+                        @else
+                            Add {{ $name }}
+                        @endif
+                    </h2>
+                    <div class="pe-3">
+                        <button type="button" class="btn btn-info" onclick="history.back();">
+                            Back
+                        </button>
+                    </div>
+                </div>
 
-                    <div class="form-group row mt-3">
+                <div class="card-body pt-2">
+                    <div class="form-group row mt-2">
                         <label for="name" class="col-md-3">Name</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" name="name" id="name"

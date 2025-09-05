@@ -73,10 +73,6 @@ class CompanyController extends Controller
         return redirect()->route('showAllCompanies');
     }
 
-    public function searchCompanies($name)
-    {
-        return Company::where('name', 'like', "%$name%")->get();
-    }
     public function deleteCompanies($id)
     {
         return Company::where('id', $id)->delete();

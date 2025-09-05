@@ -76,10 +76,6 @@ class EmployController extends Controller
         return redirect()->route('showAllEmploy', $request->input('parentId'));
     }
 
-    public function searchEmploy($name)
-    {
-        return Employ::where('name', 'like', "%$name%")->get();
-    }
     public function deleteEmploy($id)
     {
         return Employ::where('id', $id)->delete();

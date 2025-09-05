@@ -11,11 +11,13 @@ class form extends Component
     public $routeName;
     public $obj;
     public $parentId;
+    public $name;
     /**
      * Create a new component instance.
      */
-    public function __construct(string $routeName, $obj = null, $parentId = null)
+    public function __construct(string $routeName, $name, $obj = null, $parentId = null)
     {
+        $this->name = $name;
         $this->routeName = $routeName;
         $this->obj = $obj;
         $this->parentId = $parentId;

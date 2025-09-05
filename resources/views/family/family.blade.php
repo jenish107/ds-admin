@@ -22,7 +22,8 @@
                         <thead>
                             <tr>
                                 <th>id</th>
-                                <th>Name</th>
+                                <th>First name</th>
+                                <th>Last name</th>
                                 <th>Email</th>
                                 <th>Action</th>
                             </tr>
@@ -67,8 +68,12 @@
                         name: 'id'
                     },
                     {
-                        data: 'name',
-                        name: 'name'
+                        data: 'first_name',
+                        name: 'first_name'
+                    },
+                    {
+                        data: 'last_name',
+                        name: 'last_name'
                     },
                     {
                         data: 'email',

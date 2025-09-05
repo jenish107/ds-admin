@@ -17,7 +17,8 @@ class FamilyController extends Controller
 
         $query = Family::where('employee_id', $employId)
             ->when($search, function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%")
+                $query->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%");
             });
 
@@ -56,12 +57,14 @@ class FamilyController extends Controller
     public function updateFamily(Request $request)
     {
         $validate = $request->validate([
-            'name' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
             'email' => 'required',
         ]);
 
         Family::where('id',  $request->input('id'))->update([
-            'name' => $request->input('name'),
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
             'email' => $request->input('email'),
         ]);
         return redirect()->route('showAllFamily', $request->input('parentId'));
@@ -70,12 +73,14 @@ class FamilyController extends Controller
     public function createFamily(Request $request)
     {
         $validate = $request->validate([
-            'name' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
             'email' => 'required',
         ]);
 
         Family::create([
-            'name' => $request->input('name'),
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
             'email' => $request->input('email'),
             'employee_id' => $request->input('parentId')
         ]);

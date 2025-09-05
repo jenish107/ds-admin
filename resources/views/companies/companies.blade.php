@@ -9,7 +9,7 @@
     <x-layout>
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Family All Information</h5>
+                <h5 class="card-title">Companies All Information</h5>
 
                 <div class="d-flex align-items-end justify-content-end mb-3">
                     <a href="{{ route('showCompaniesForm') }}" class="btn btn-success text-light">add new

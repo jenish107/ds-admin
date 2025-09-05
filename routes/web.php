@@ -49,7 +49,8 @@ Route::middleware('IsLogin')->group(function () {
     Route::put('/update-user', [UserController::class, 'UpdateUser'])->name('UpdateUser');
 
     //-----companies ----
-    Route::get('/get-all-companies/{rowNumber}/{name?}', [CompanyController::class, 'allCompanies'])->name('getAllCompanies');
+    Route::get('/get-all-companies', [CompanyController::class, 'allCompanies'])->name('getAllCompanies');
+    // Route::get('/get-all-companies/{rowNumber}/{name?}', [CompanyController::class, 'allCompanies'])->name('getAllCompanies');
     Route::get('/companies-data', [CompanyController::class, 'showCompanies'])->name('showAllCompanies');
     Route::get('/show-companies-form', [CompanyController::class, 'showCompaniesForm'])->name('showCompaniesForm');
     Route::post('/add-companies', [CompanyController::class, 'createCompanies'])->name('addCompanies');
@@ -58,7 +59,7 @@ Route::middleware('IsLogin')->group(function () {
     Route::delete('/delete-companies/{id}', [CompanyController::class, 'deleteCompanies'])->name('deleteCompanies');
 
     //-----department ----
-    Route::get('/get-all-department/{companyId}/{rowNumber}/{name?}', [DepartmentController::class, 'allDepartment'])->name('getAllDepartment');
+    Route::get('/get-all-department/{companyId}', [DepartmentController::class, 'allDepartment'])->name('getAllDepartment');
     Route::get('/department-data/{companyId}', [DepartmentController::class, 'showDepartment'])->name('showAllDepartment');
     Route::get('/show-department-form/{companyId}', [DepartmentController::class, 'showDepartmentForm'])->name('showDepartmentForm');
     Route::post('/add-department', [DepartmentController::class, 'createDepartment'])->name('addDepartment');
@@ -67,7 +68,7 @@ Route::middleware('IsLogin')->group(function () {
     Route::delete('/delete-department/{id}', [DepartmentController::class, 'deleteDepartment'])->name('deleteDepartment');
 
     //-----employ ----
-    Route::get('/get-all-employ/{departmentId}/{rowNumber}/{name?}', [EmployController::class, 'allEmploy'])->name('getAllEmploy');
+    Route::get('/get-all-employ/{departmentId}', [EmployController::class, 'allEmploy'])->name('getAllEmploy');
     Route::get('/employ-data/{departmentId}', [EmployController::class, 'showEmploy'])->name('showAllEmploy');
     Route::get('/show-employ-form/{departmentId}', [EmployController::class, 'showEmployForm'])->name('showEmployForm');
     Route::post('/add-employ', [EmployController::class, 'createEmploy'])->name('addEmploy');
@@ -76,11 +77,11 @@ Route::middleware('IsLogin')->group(function () {
     Route::delete('/delete-employ/{id}', [EmployController::class, 'deleteEmploy'])->name('deleteEmploy');
 
     //-----family ----
-    Route::get('/get-all-family/{employId}/{rowNumber}/{name?}', [FamilyController::class, 'allFamily'])->name('getAllFamily');
+    Route::get('/get-all-family/{employId}', [FamilyController::class, 'allFamily'])->name('getAllFamily');
     Route::get('/family-data/{employId}', [FamilyController::class, 'showFamily'])->name('showAllFamily');
     Route::get('/show-family-form/{employId}', [FamilyController::class, 'showFamilyForm'])->name('showFamilyForm');
     Route::post('/add-family', [FamilyController::class, 'createFamily'])->name('addFamily');
-    Route::get('/show-update-family-form/{id}/{employId}', [FamilyController::class, 'showUpdateFamilyForm'])->name('showUpdateFamilyForm');
+    Route::get('/show-update-family-form/{id}/{departmentId}', [FamilyController::class, 'showUpdateFamilyForm'])->name('showUpdateFamilyForm');
     Route::put('/update-family', [FamilyController::class, 'updateFamily'])->name('updateFamily');
     Route::delete('/delete-family/{id}', [FamilyController::class, 'deleteFamily'])->name('deleteFamily');
 });

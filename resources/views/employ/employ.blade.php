@@ -1,43 +1,23 @@
 @extends('layout.mainLayout')
 
 @push('style')
-    <link href="{{ asset('assets/libs/flot/css/float-chart.css') }} " rel="stylesheet" />
+    <link rel="stylesheet"
+        href="{{ asset('assets/extra-libs/DataTables/DataTables-1.10.16/css/jquery.dataTables.min.css') }}">
 @endpush
+
 @section('main')
     <x-layout>
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Employ All Information</h5>
 
-                <div class="input-group d-flex justify-content-between my-3">
-                    <div>
-                        <select name="rowNumber" id="rowNumber">
-                            <option value="2">2</option>
-                            <option value="4">4</option>
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                        </select>
-                    </div>
-
-                    <div class="d-flex">
-                        <div class="form-outline" data-mdb-input-init>
-                            <input type="search" name="search" id="search" placeholder="search here"
-                                class="form-control" />
-                            <label hidden class="form-label" for="search">Search</label>
-                        </div>
-                        <button type="button" class="btn btn-primary" data-mdb-ripple-init>
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-
                 <div class="d-flex align-items-end justify-content-end mb-3">
                     <a href="{{ route('showEmployForm', $departmentId) }}" class="btn btn-success text-light">add new
                         employ</a>
                 </div>
-                <div class="table-responsive">
-                    <table id="zero_config" class="table table-striped table-bordered">
+
+                <div class="table-responsive w-100">
+                    <table id="dataTable" class="table table-striped table-bordered w-100 min-w-25">
                         <thead>
                             <tr>
                                 <th>id</th>
@@ -46,17 +26,7 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="table-body">
-
-                        </tbody>
                     </table>
-                </div>
-
-                <div class="d-flex justify-content-center">
-                    <nav>
-                        <ul class="pagination" id="pagination">
-                        </ul>
-                    </nav>
                 </div>
             </div>
         </div>
@@ -74,129 +44,69 @@
 @endsection
 
 @push('scripts')
+    <script src="{{ asset('assets/extra-libs/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js') }}"></script>
+
     <script>
-        var departmentId = {{ $departmentId }};
-        let rowNumber = 2;
-        let name = undefined;
-
-        function addRow(data) {
-            $('#table-body').empty();
-            data.map(employ => {
-                var currRow = $(`<tr id='table-row-${employ.id}'></tr>`);
-                currRow.append(`<td>${employ?.id}</td>`);
-                currRow.append(`<td>${employ?.name}</td>`);
-                currRow.append(`<td>${employ?.email}</td>`);
-                currRow.append(`
-                        <td> 
-                            <a href="/family-data/${employ.id}">
-                                 <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
-                           </a>
-
-                            <a href="/show-update-employ-form/${employ.id}/${departmentId}">
-                                <button
-                                type="button"
-                                data-id='${employ?.id}'
-                                class="btn btn-success btn-sm text-white edit_btn"
-                                >
-                                    Edit
-                                </button>
-                            </a>
-                            
-                            <button
-                            type="button"
-                            data-id='${employ?.id}'
-                            class="btn btn-danger btn-sm text-white delete_btn"
-                            >
-                                delete
-                            </button>
-                        </td>
-                        `);
-
-                $('#table-body').append(currRow);
-            });
-        }
-
-        function loadAllData($url = `/get-all-employ/${departmentId}/2`) {
-            if (name) {
-                $url = `/get-all-employ/${departmentId}/${rowNumber}/${name}`;
-            }
-            $.ajax({
-                url: $url,
-                type: 'GET',
-                contentType: 'application/json',
-                success: function(response) {
-                    addRow(response['data']);
-                    $('#pagination').empty();
-
-                    $('#pagination').append(`
-                                    <li class="page-item" id="prev_page_item">
-                                        <a href="#" class="page-link" id="prev_page">Previous</a>
-                                    </li>`);
-                    $('#pagination').append(
-                        `<li class="p-2 pb-1 border border-light-subtle" id="page-number">${response.current_page}</li>`
-                    );
-                    $('#pagination').append(`
-                                    <li class="page-item" id="next_page_item">
-                                        <a href="#" class="page-link" id="next_page">Next</a>
-                                    </li>`);
-
-                    if (response.prev_page_url) {
-                        $('#prev_page').data('url', response.prev_page_url)
-                    } else {
-                        $('#prev_page_item').addClass('disabled')
-                    }
-
-                    if (response.next_page_url) {
-                        $('#next_page').data('url', response.next_page_url)
-                    } else {
-                        $('#next_page_item').addClass('disabled')
-                    }
-                },
-                error: function(xhr, status, error) {
-                    alert('Error :' + xhr.responseText);
-                }
-            })
-        }
-
         $(document).ready(function() {
-            loadAllData();
+            var departmentId = {{ $departmentId }};
 
-            $("#rowNumber").change(function() {
-                rowNumber = $(this).val()
-                loadAllData(`/get-all-employ/${departmentId}/${rowNumber}`)
-            })
+            var table = $('#dataTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: `/get-all-employ/${departmentId}`,
+                    type: 'GET'
+                },
+                lengthMenu: [2, 4, 10, 20, 30],
+                columns: [{
+                        data: 'id',
+                        name: 'id'
+                    },
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'email',
+                        name: 'email'
+                    },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            return `
+                                <a href="/family-data/${data.id}">
+                                    <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
+                                </a>
 
-            $(document).on('click', '#pagination a', function() {
-                let url = $(this).data('url');
-                if (url) {
-                    loadAllData(url);
-                }
+                                <a href="/show-update-employ-form/${data.id}/${departmentId}">
+                                    <button type="button" class="btn btn-success btn-sm text-white">Edit</button>
+                                </a>
+
+                                <button type="button" data-id="${data.id}" class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
+                            `;
+                        },
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
             });
 
             $(document).on('click', '.delete_btn', function() {
                 let id = $(this).data('id');
-
                 $.ajax({
                     url: `/delete-employ/${id}`,
                     type: 'DELETE',
                     data: {
                         _token: '{{ csrf_token() }}'
                     },
-                    success: function(response) {
-                        $(`#table-row-${id}`).remove();
+                    success: function() {
+                        table.ajax.reload();
                     },
-                    error: function(xhr, status, error) {
-                        console.log('Error :', xhr.responseText);
+                    error: function(xhr) {
+                        alert('Error: ' + xhr.responseText);
                     }
-                })
+                });
             });
-
-            //search
-            $('#search').keyup(function() {
-                name = $(this).val();
-
-                loadAllData();
-            })
         });
     </script>
 @endpush

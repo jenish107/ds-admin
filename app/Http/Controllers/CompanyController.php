@@ -7,12 +7,29 @@ use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
-    public function allCompanies($rowNumber, $name = null)
+    public function allCompanies(Request $request)
     {
-        if ($name == null) {
-            return Company::simplePaginate($rowNumber);
-        }
-        return Company::where('name', 'like', "%$name%")->simplePaginate($rowNumber);
+        $length = $request->input('length');
+        $start  = $request->input('start');
+        $search = $request->input('search.value');
+
+        $query = Company::when($search, function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+        });
+
+        $recordsFiltered = $query->count();
+
+        $families = $query->offset($start)->limit($length)->get();
+
+        $recordsTotal = Company::count();
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $families,
+        ]);
     }
     public function showCompanies()
     {

@@ -8,12 +8,30 @@ use Illuminate\Http\Request;
 
 class EmployController extends Controller
 {
-    public function allEmploy($departmentId, $rowNumber, $name = null)
+    public function allEmploy(Request $request, $departmentId)
     {
-        if ($name == null) {
-            return Employ::with('department')->where('department_id', $departmentId)->simplePaginate($rowNumber);
-        }
-        return Employ::with('department')->where('department_id', $departmentId)->where('name', 'like', "%$name%")->simplePaginate($rowNumber);
+        $length = $request->input('length');
+        $start  = $request->input('start');
+        $search = $request->input('search.value');
+
+        $query = Employ::where('department_id', $departmentId)
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+
+        $recordsFiltered = $query->count();
+
+        $families = $query->offset($start)->limit($length)->get();
+
+        $recordsTotal = Employ::where('department_id', $departmentId)->count();
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $families,
+        ]);
     }
     public function showEmploy($departmentId)
     {

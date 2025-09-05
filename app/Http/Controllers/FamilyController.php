@@ -9,23 +9,44 @@ use Illuminate\Http\Request;
 
 class FamilyController extends Controller
 {
-    public function allFamily($employId, $rowNumber, $name = null)
+    public function allFamily(Request $request, $employId)
     {
-        if ($name == null) {
-            return Family::with('employ')->where('employee_id', $employId)->simplePaginate($rowNumber);
-        }
-        return Family::with('employ')->where('employee_id', $employId)->where('name', 'like', "%$name%")->simplePaginate($rowNumber);
+        $length = $request->input('length');
+        $start  = $request->input('start');
+        $search = $request->input('search.value');
+
+        $query = Family::where('employee_id', $employId)
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+
+        $recordsFiltered = $query->count();
+
+        $families = $query->offset($start)->limit($length)->get();
+
+        $recordsTotal = Family::where('employee_id', $employId)->count();
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $families,
+        ]);
     }
+
     public function showFamily($employId)
     {
         $obj = Employ::with('department')->find($employId);
 
         return view('family.family', ['employId' => $employId, 'companyId' => $obj->department->company_id, 'departmentId' => $obj->department_id]);
     }
+
     public function showFamilyForm($employId)
     {
         return view('family.form', ["employId" => $employId]);
     }
+
     public function showUpdateFamilyForm($id, $employId)
     {
         $family = Family::find($id);
@@ -52,18 +73,16 @@ class FamilyController extends Controller
             'name' => 'required',
             'email' => 'required',
         ]);
+
         Family::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'employee_id' => $request->input('parentId')
         ]);
+
         return redirect()->route('showAllFamily', $request->input('parentId'));
     }
 
-    public function searchFamily($name)
-    {
-        return Family::where('name', 'like', "%$name%")->get();
-    }
     public function deleteFamily($id)
     {
         return Family::where('id', $id)->delete();

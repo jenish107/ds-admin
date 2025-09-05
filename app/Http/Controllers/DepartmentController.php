@@ -7,12 +7,30 @@ use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
-    public function allDepartment($companyId, $rowNumber, $name = null)
+    public function allDepartment(Request $request, $companyId)
     {
-        if ($name == null) {
-            return Department::with('company')->where('company_id', $companyId)->simplePaginate($rowNumber);
-        }
-        return Department::with('company')->where('company_id', $companyId)->where('name', 'like', "%$name%")->simplePaginate($rowNumber);
+        $length = $request->input('length');
+        $start  = $request->input('start');
+        $search = $request->input('search.value');
+
+        $query = Department::where('company_id', $companyId)
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+
+        $recordsFiltered = $query->count();
+
+        $families = $query->offset($start)->limit($length)->get();
+
+        $recordsTotal = Department::where('company_id', $companyId)->count();
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $families,
+        ]);
     }
     public function showDepartment($companyId)
     {

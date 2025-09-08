@@ -15,18 +15,21 @@
             <div class="col-md-12">
                 <div class="card">
 
-                    <form class="form-horizontal" action="{{ route('updateFamily') }}" method="POST">
+                    <form class="form-horizontal"
+                        action="{{ isset($family) ? route('updateFamily', $family->id) : route('addFamily') }}"
+                        method="POST">
                         @csrf
-                        @if ($family)
+                        @isset($family)
                             @method('PUT')
-                        @endif
+                        @endisset
+
                         <div class="d-flex justify-content-between align-items-center">
                             <h2 class="mt-2 ms-2">
-                                @if ($family)
+                                @isset($family)
                                     Update Family
                                 @else
                                     Add Family
-                                @endif
+                                @endisset
                             </h2>
                             <div class="pe-3">
                                 <button type="button" class="btn btn-info" onclick="history.back();">
@@ -81,11 +84,11 @@
                         <div class="border-top">
                             <div class="card-body">
                                 <button type="submit" class="btn btn-primary">
-                                    @if ($family)
+                                    @isset($family)
                                         Update
                                     @else
                                         Add
-                                    @endif
+                                    @endisset
                                 </button>
                             </div>
                         </div>

@@ -80,15 +80,8 @@
                         name: 'email'
                     },
                     {
-                        data: null,
-                        render: function(data, type, row) {
-                            return `
-                                <a href="/show-update-family-form/${data.id}/${employId}">
-                                    <button type="button" class="btn btn-success btn-sm text-white">Edit</button>
-                                </a>
-                                <button type="button" data-id="${data.id}" class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
-                            `;
-                        },
+                        data: 'action',
+                        name: 'action',
                         orderable: false,
                         searchable: false
                     }

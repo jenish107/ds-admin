@@ -63,18 +63,8 @@
                         name: 'email'
                     },
                     {
-                        data: null,
-                        render: function(data, type, row) {
-                            return `
-                                <a href="department-data/${data.id}">
-                                    <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
-                                </a>
-                                <a href="/show-update-companies-form/${data.id}">
-                                    <button type="button" class="btn btn-success btn-sm text-white">Edit</button>
-                                </a>
-                                <button type="button" data-id="${data.id}" class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
-                            `;
-                        },
+                        data: 'action',
+                        name: 'action',
                         orderable: false,
                         searchable: false
                     }

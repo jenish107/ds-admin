@@ -20,15 +20,32 @@ class CompanyController extends Controller
 
         $recordsFiltered = $query->count();
 
-        $families = $query->offset($start)->limit($length)->get();
+        $companies = $query->offset($start)->limit($length)->get();
 
         $recordsTotal = Company::count();
+
+        $data = $companies->map(function ($company) {
+            return [
+                'id' => $company->id,
+                'name' => $company->name,
+                'email' => $company->email,
+                'action' => '
+                    <a href="' . route('showAllDepartment', $company->id) . '">
+                        <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
+                    </a>
+                    <a href="' . route('showUpdateCompaniesForm', $company->id) . '" 
+                       class="btn btn-success btn-sm text-white">Edit</a>
+                    <button type="button" data-id="' . $company->id . '" 
+                       class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
+                ',
+            ];
+        });
 
         return response()->json([
             'draw' => intval($request->input('draw')),
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $families,
+            'data' => $data,
         ]);
     }
     public function showCompanies()

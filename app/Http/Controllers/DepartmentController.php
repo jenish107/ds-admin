@@ -21,15 +21,32 @@ class DepartmentController extends Controller
 
         $recordsFiltered = $query->count();
 
-        $families = $query->offset($start)->limit($length)->get();
+        $departments = $query->offset($start)->limit($length)->get();
 
         $recordsTotal = Department::where('company_id', $companyId)->count();
+
+        $data = $departments->map(function ($department) use ($companyId) {
+            return [
+                'id' => $department->id,
+                'name' => $department->name,
+                'email' => $department->email,
+                'action' => '
+                    <a href="' . route('showAllEmploy', $department->id) . '">
+                        <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
+                    </a>
+                    <a href="' . route('showUpdateDepartmentForm', [$department->id, $companyId]) . '" 
+                       class="btn btn-success btn-sm text-white">Edit</a>
+                    <button type="button" data-id="' . $department->id . '" 
+                       class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
+                ',
+            ];
+        });
 
         return response()->json([
             'draw' => intval($request->input('draw')),
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $families,
+            'data' => $data,
         ]);
     }
     public function showDepartment($companyId)

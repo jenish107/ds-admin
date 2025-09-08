@@ -22,15 +22,32 @@ class EmployController extends Controller
 
         $recordsFiltered = $query->count();
 
-        $families = $query->offset($start)->limit($length)->get();
+        $employees = $query->offset($start)->limit($length)->get();
 
         $recordsTotal = Employ::where('department_id', $departmentId)->count();
+
+        $data = $employees->map(function ($employ) use ($departmentId) {
+            return [
+                'id' => $employ->id,
+                'name' => $employ->name,
+                'email' => $employ->email,
+                'action' => '
+                    <a href="' . route('showAllFamily', $employ->id) . '">
+                        <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
+                    </a>
+                    <a href="' . route('showUpdateEmployForm', [$employ->id, $departmentId]) . '" 
+                       class="btn btn-success btn-sm text-white">Edit</a>
+                    <button type="button" data-id="' . $employ->id . '" 
+                       class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
+                ',
+            ];
+        });
 
         return response()->json([
             'draw' => intval($request->input('draw')),
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $families,
+            'data' => $data,
         ]);
     }
     public function showEmploy($departmentId)

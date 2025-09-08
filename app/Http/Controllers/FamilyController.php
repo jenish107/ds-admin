@@ -28,11 +28,26 @@ class FamilyController extends Controller
 
         $recordsTotal = Family::where('employee_id', $employId)->count();
 
+        $data = $families->map(function ($family) use ($employId) {
+            return [
+                'id'         => $family->id,
+                'first_name' => $family->first_name,
+                'last_name'  => $family->last_name,
+                'email'      => $family->email,
+                'action'     => '
+                    <a href="' . route('showUpdateFamilyForm', [$family->id, $employId]) . '" 
+                       class="btn btn-success btn-sm text-white">Edit</a>
+                    <button type="button" data-id="' . $family->id . '" 
+                       class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
+                ',
+            ];
+        });
+
         return response()->json([
             'draw' => intval($request->input('draw')),
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $families,
+            'data' => $data,
         ]);
     }
 

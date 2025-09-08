@@ -36,7 +36,6 @@ Route::middleware('IsLogin')->group(function () {
     Route::post('/new-password-form', [UserController::class, 'newPasswordForm'])->name('newPasswordForm');
     Route::put('/new-password', [UserController::class, 'newPassword'])->name('newPassword');
 
-    // Route::get('/get-img', [UserController::class, 'fetchImg'])->name('getImg');
     Route::get('/get-countries', [UserController::class, 'fetchCountry'])->name('getCountries');
     Route::get('/get-state/{id}', [UserController::class, 'fetchState'])->name('getState');
     Route::get('/get-city/{id}', [UserController::class, 'fetchCity'])->name('getCity');
@@ -50,7 +49,6 @@ Route::middleware('IsLogin')->group(function () {
 
     //-----companies ----
     Route::get('/get-all-companies', [CompanyController::class, 'allCompanies'])->name('getAllCompanies');
-    // Route::get('/get-all-companies/{rowNumber}/{name?}', [CompanyController::class, 'allCompanies'])->name('getAllCompanies');
     Route::get('/companies-data', [CompanyController::class, 'showCompanies'])->name('showAllCompanies');
     Route::get('/show-companies-form', [CompanyController::class, 'showCompaniesForm'])->name('showCompaniesForm');
     Route::post('/add-companies', [CompanyController::class, 'createCompanies'])->name('addCompanies');

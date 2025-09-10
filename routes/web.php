@@ -6,6 +6,8 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployController;
 use App\Http\Controllers\FamilyController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Models\Employ;
 
@@ -82,8 +84,28 @@ Route::middleware('IsLogin')->group(function () {
     Route::get('/show-update-family-form/{id}/{departmentId}', [FamilyController::class, 'showUpdateFamilyForm'])->name('showUpdateFamilyForm');
     Route::put('/update-family', [FamilyController::class, 'updateFamily'])->name('updateFamily');
     Route::delete('/delete-family/{id}', [FamilyController::class, 'deleteFamily'])->name('deleteFamily');
+
+    //-----invoice---
+    Route::controller(InvoiceController::class)->group(function () {
+        Route::prefix('/invoice')->group(function () {
+            Route::get('/list', 'invoiceList')->name('showInvoiceList');
+            Route::get('/get-list', 'getAllInvoice')->name('getAllInvoice');
+            Route::get('/form/{id?}', 'showInvoiceForm')->name('showInvoiceForm');
+            Route::post('/add', 'addInvoice')->name('addInvoice');
+            Route::put('/update', 'updateInvoice')->name('updateInvoice');
+            Route::delete('/delete/{id}', 'deleteInvoice')->name('deleteInvoice');
+        });
+    });
+
+    //---product-----
+    Route::controller(ProductController::class)->group(function () {
+        Route::prefix('/product')->group(function () {
+            Route::get('/list', 'productList')->name('showProductList');
+            Route::get('/get-list', 'getAllProduct')->name('getAllProduct');
+            Route::get('/form/{id?}', 'showProductForm')->name('showProductForm');
+            Route::post('/add', 'addProduct')->name('addProduct');
+            Route::put('/update', 'updateProduct')->name('updateProduct');
+            Route::delete('/delete/{id}', 'deleteProduct')->name('deleteProduct');
+        });
+    });
 });
-
-
-//test 
-Route::get('/test', [FamilyController::class, 'test']);

@@ -18,6 +18,12 @@ class User extends Authenticatable
         'number',
         'image',
     ];
+
+    public function invoice()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
     public function country()
     {
         return $this->belongsTo(Country::class);

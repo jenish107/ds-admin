@@ -110,9 +110,4 @@ class FamilyController extends Controller
     {
         return Family::where('id', $id)->delete();
     }
-
-    public function test()
-    {
-        return Family::get();
-    }
 }

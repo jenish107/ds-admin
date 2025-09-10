@@ -254,18 +254,18 @@
                                 </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="form-wizard.html" class="sidebar-link"><i class="mdi mdi-receipt"></i><span
-                                    class="hide-menu"> Add Product
+                            <a href="{{ route('showProductForm') }}" class="sidebar-link"><i
+                                    class="mdi mdi-receipt"></i><span class="hide-menu"> Add Product
                                 </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="form-wizard.html" class="sidebar-link"><i class="mdi mdi-receipt"></i><span
-                                    class="hide-menu"> Product Invoice
+                            <a href="{{ route('showInvoiceForm') }}" class="sidebar-link"><i
+                                    class="mdi mdi-receipt"></i><span class="hide-menu"> Product Invoice
                                 </span></a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="form-wizard.html" class="sidebar-link"><i class="mdi mdi-receipt"></i><span
-                                    class="hide-menu"> View Product
+                            <a href="{{ route('showProductList') }}" class="sidebar-link"><i
+                                    class="mdi mdi-receipt"></i><span class="hide-menu"> View Product
                                 </span></a>
                         </li>
                         <li class="sidebar-item">

@@ -11,8 +11,17 @@
             <div class="card-body">
                 <h5 class="card-title">Department All Information</h5>
 
-                <div class="d-flex align-items-end justify-content-end mb-3">
-                    <a href="{{ route('showDepartmentForm', $companyId) }}" class="btn btn-success text-light">add new
+                <div class="d-flex align-items-end justify-content-between mb-3">
+                    <ol class="breadcrumb" style="background: none !important;">
+                        <li class="breadcrumb-item"><a href="{{ route('showAllCompanies') }}"> <span
+                                    class="text-secondary">Company | </span> {{ $company->name }}
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            department
+                        </li>
+                    </ol>
+                    <a href="{{ route('showDepartmentForm', $company->id) }}" class="btn btn-success text-light">add new
                         department</a>
                 </div>
 
@@ -45,7 +54,7 @@
 
     <script>
         $(document).ready(function() {
-            var companyId = {{ $companyId }};
+            var companyId = {{ $company->id }};
 
             var table = $('#dataTable').DataTable({
                 processing: true,

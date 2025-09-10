@@ -11,8 +11,24 @@
             <div class="card-body">
                 <h5 class="card-title">Employ All Information</h5>
 
-                <div class="d-flex align-items-end justify-content-end mb-3">
-                    <a href="{{ route('showEmployForm', $departmentId) }}" class="btn btn-success text-light">add new
+                <div class="d-flex align-items-end justify-content-between mb-3">
+                    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                        <ol class="breadcrumb" style="background: none !important;">
+                            <li class="breadcrumb-item"><a href="{{ route('showAllCompanies') }}"> <span
+                                        class="text-secondary">Company |</span>
+                                    {{ $department->company->name }}</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('showAllDepartment', $department->company->id) }}"> <span
+                                        class="text-secondary">Department |</span>
+                                    {{ $department->name }}</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                employ
+                            </li>
+                        </ol>
+                    </nav>
+                    <a href="{{ route('showEmployForm', $department->id) }}" class="btn btn-success text-light">add new
                         employ</a>
                 </div>
 
@@ -34,7 +50,7 @@
         <x-slot:breadcrumb>
             <li class="breadcrumb-item"><a href="{{ route('showAllCompanies') }}">Home</a></li>
             <li class="breadcrumb-item" aria-current="page">
-                <a href="{{ route('showAllDepartment', $companyId) }}">department</a>
+                <a href="{{ route('showAllDepartment', $department->company->id) }}">department</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">
                 employ
@@ -48,7 +64,7 @@
 
     <script>
         $(document).ready(function() {
-            var departmentId = {{ $departmentId }};
+            var departmentId = {{ $department->id }};
 
             var table = $('#dataTable').DataTable({
                 processing: true,

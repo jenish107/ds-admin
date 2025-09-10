@@ -52,8 +52,8 @@ class EmployController extends Controller
     }
     public function showEmploy($departmentId)
     {
-        $id = Department::where('id', $departmentId)->select('company_id')->first();
-        return view('employ.employ', ['departmentId' => $departmentId, 'companyId' => $id->company_id ?? null]);
+        $obj = Department::where('id', $departmentId)->with('company')->select('id', 'company_id', 'name')->first();
+        return view('employ.employ', ['department' => $obj]);
     }
     public function showEmployForm($departmentId)
     {

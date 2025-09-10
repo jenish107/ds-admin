@@ -83,3 +83,7 @@ Route::middleware('IsLogin')->group(function () {
     Route::put('/update-family', [FamilyController::class, 'updateFamily'])->name('updateFamily');
     Route::delete('/delete-family/{id}', [FamilyController::class, 'deleteFamily'])->name('deleteFamily');
 });
+
+
+//test 
+Route::get('/test', [FamilyController::class, 'test']);

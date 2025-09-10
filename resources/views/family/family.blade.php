@@ -11,8 +11,29 @@
             <div class="card-body">
                 <h5 class="card-title">Family All Information</h5>
 
-                <div class="d-flex align-items-end justify-content-end mb-3">
-                    <a href="{{ route('showFamilyForm', $employId) }}" class="btn btn-success text-light">
+                <div class="d-flex align-items-end justify-content-between mb-3">
+                    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                        <ol class="breadcrumb" style="background: none !important;">
+                            <li class="breadcrumb-item"><a href="{{ route('showAllCompanies') }}"> <span
+                                        class="text-secondary">Company |</span>
+                                    {{ $employ->department->company->name }}</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('showAllDepartment', $employ->department->company->id) }}"> <span
+                                        class="text-secondary">Department |</span>
+                                    {{ $employ->department->name }}</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('showAllEmploy', $employ->department->id) }}"><span
+                                        class="text-secondary">Employ
+                                        |</span> {{ $employ->name }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">
+                                <span>Family</span>
+                            </li>
+                        </ol>
+                    </nav>
+                    <a href="{{ route('showFamilyForm', $employ->id) }}" class="btn btn-success text-light">
                         Add New Family
                     </a>
                 </div>
@@ -36,10 +57,10 @@
         <x-slot:breadcrumb>
             <li class="breadcrumb-item"><a href="{{ route('showAllCompanies') }}">Home</a></li>
             <li class="breadcrumb-item">
-                <a href="{{ route('showAllDepartment', $companyId) }}">Department</a>
+                <a href="{{ route('showAllDepartment', $employ->department->company->id) }}">Department</a>
             </li>
             <li class="breadcrumb-item">
-                <a href="{{ route('showAllEmploy', $departmentId) }}">Employ</a>
+                <a href="{{ route('showAllEmploy', $employ->department->id) }}">Employ</a>
             </li>
             <li class="breadcrumb-item active">
                 <span>Family</span>
@@ -53,7 +74,7 @@
 
     <script>
         $(document).ready(function() {
-            var employId = {{ $employId }};
+            var employId = {{ $employ->id }};
 
             var table = $('#familyTable').DataTable({
                 processing: true,

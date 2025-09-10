@@ -15,8 +15,7 @@
             <div class="col-md-12">
                 <div class="card">
 
-                    <form class="form-horizontal"
-                        action="{{ isset($family) ? route('updateFamily', $family->id) : route('addFamily') }}"
+                    <form class="form-horizontal" action="{{ isset($family) ? route('updateFamily') : route('addFamily') }}"
                         method="POST">
                         @csrf
                         @isset($family)

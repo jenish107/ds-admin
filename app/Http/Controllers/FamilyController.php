@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
 use App\Models\Employ;
 use App\Models\Family;
 use Illuminate\Http\Request;
@@ -17,8 +16,7 @@ class FamilyController extends Controller
 
         $query = Family::where('employee_id', $employId)
             ->when($search, function ($query) use ($search) {
-                $query->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%")
+                $query->where('full_name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%");
             });
 
@@ -26,13 +24,14 @@ class FamilyController extends Controller
 
         $families = $query->offset($start)->limit($length)->get();
 
+
         $recordsTotal = Family::where('employee_id', $employId)->count();
 
         $data = $families->map(function ($family) use ($employId) {
             return [
                 'id'         => $family->id,
-                'first_name' => $family->first_name,
-                'last_name'  => $family->last_name,
+                'first_name' => $family->fullNameParts['first_name'],
+                'last_name'  => $family->fullNameParts['last_name'],
                 'email'      => $family->email,
                 'action'     => '
                     <a href="' . route('showUpdateFamilyForm', [$family->id, $employId]) . '" 
@@ -53,9 +52,9 @@ class FamilyController extends Controller
 
     public function showFamily($employId)
     {
-        $obj = Employ::with('department')->find($employId);
+        $employ = Employ::with('department.company')->select('name', 'id', "department_id")->find($employId);
 
-        return view('family.family', ['employId' => $employId, 'companyId' => $obj->department->company_id, 'departmentId' => $obj->department_id]);
+        return view('family.family', ['employ' => $employ]);
     }
 
     public function showFamilyForm($employId)
@@ -78,8 +77,10 @@ class FamilyController extends Controller
         ]);
 
         Family::where('id',  $request->input('id'))->update([
-            'first_name' => $request->input('first_name'),
-            'last_name' => $request->input('last_name'),
+            'full_name' => [
+                'first_name' => $request->input('first_name'),
+                'last_name' => $request->input('last_name'),
+            ],
             'email' => $request->input('email'),
         ]);
         return redirect()->route('showAllFamily', $request->input('parentId'));
@@ -94,8 +95,10 @@ class FamilyController extends Controller
         ]);
 
         Family::create([
-            'first_name' => $request->input('first_name'),
-            'last_name' => $request->input('last_name'),
+            'full_name' => [
+                'first_name' => $request->input('first_name'),
+                'last_name' => $request->input('last_name'),
+            ],
             'email' => $request->input('email'),
             'employee_id' => $request->input('parentId')
         ]);
@@ -106,5 +109,10 @@ class FamilyController extends Controller
     public function deleteFamily($id)
     {
         return Family::where('id', $id)->delete();
+    }
+
+    public function test()
+    {
+        return Family::get();
     }
 }

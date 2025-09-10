@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\Department;
 use Illuminate\Http\Request;
 
@@ -51,7 +52,8 @@ class DepartmentController extends Controller
     }
     public function showDepartment($companyId)
     {
-        return view('department.department', ['companyId' => $companyId]);
+        $company = Company::where('id', $companyId)->with('department')->get()->first();
+        return view('department.department', ['company' => $company]);
     }
     public function showDepartmentForm($companyId)
     {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
@@ -13,5 +14,9 @@ class InvoiceController extends Controller
     public function showInvoiceForm()
     {
         return view('invoice.invoice');
+    }
+    public function getProduct()
+    {
+        return Product::get();
     }
 }

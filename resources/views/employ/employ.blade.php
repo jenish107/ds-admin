@@ -106,8 +106,8 @@
                     success: function() {
                         table.ajax.reload();
                     },
-                    error: function(xhr) {
-                        alert('Error: ' + xhr.responseText);
+                    error: function(error) {
+                        console.log('Error: ', error);
                     }
                 });
             });

@@ -88,6 +88,8 @@ Route::middleware('IsLogin')->group(function () {
     //-----invoice---
     Route::controller(InvoiceController::class)->group(function () {
         Route::prefix('/invoice')->group(function () {
+            Route::get('/get-products', 'getProduct')->name('getProduct');
+
             Route::get('/list', 'invoiceList')->name('showInvoiceList');
             Route::get('/get-list', 'getAllInvoice')->name('getAllInvoice');
             Route::get('/form/{id?}', 'showInvoiceForm')->name('showInvoiceForm');

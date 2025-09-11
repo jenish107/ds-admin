@@ -11,11 +11,6 @@
             <div class="card-body">
                 <h5 class="card-title">Product All Information</h5>
 
-                {{-- <div class="d-flex align-items-end justify-content-end mb-3">
-                    <a href="{{ route('showProductForm') }}" class="btn btn-success text-light">Add new
-                        Product</a>
-                </div> --}}
-
                 <div class="table-responsive w-100">
                     <table id="dataTable" class="table table-striped table-bordered w-100 min-w-25">
                         <thead>
@@ -49,7 +44,6 @@
                     url: `/product/get-list`,
                     type: 'GET'
                 },
-                lengthMenu: [2, 4, 10, 20, 30],
                 columns: [{
                         data: 'id',
                         name: 'id'

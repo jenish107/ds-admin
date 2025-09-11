@@ -12,7 +12,7 @@ class Product extends Model
         'price'
     ];
 
-    public function InvoiceItem()
+    public function invoiceItem()
     {
         return $this->hasOne(InvoiceItem::class);
     }

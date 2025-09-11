@@ -17,9 +17,9 @@
                         <div class="card">
 
                             <form class="form-horizontal"
-                                action="{{ isset($family) ? route('updateFamily') : route('addFamily') }}" method="POST">
+                                action="{{ isset($invoice) ? route('updateFamily') : route('addInvoice') }}" method="POST">
                                 @csrf
-                                @isset($family)
+                                @isset($invoice)
                                     @method('PUT')
                                 @endisset
 
@@ -36,10 +36,10 @@
                                     <div class="form-group row mt-2">
                                         <label for="name" class="col-md-3">Customer Name</label>
                                         <div class="col-sm-9">
-                                            <input required type="text" class="form-control" name="name"
-                                                id="name" placeholder="Enter Customer Name Here"
-                                                value="{{ $obj->name ?? '' }}" />
-                                            @error('name')
+                                            <input required type="text" class="form-control" name="customer_name"
+                                                id="customer_name" placeholder="Enter Customer Name Here"
+                                                value="{{ $obj->customer_name ?? '' }}" />
+                                            @error('customer_name')
                                                 <div>
                                                     {{ $message }}
                                                 </div>
@@ -51,7 +51,7 @@
                                         <label for="customer_email" class="col-md-3">Email</label>
                                         <div class="col-sm-9">
                                             <input required type="email" class="form-control"
-                                                value="{{ $family->customer_email ?? '' }}" name="customer_email"
+                                                value="{{ $invoice->customer_email ?? '' }}" name="customer_email"
                                                 id="customer_email" placeholder="Enter customer email " />
                                             @error('customer_email')
                                                 <div>
@@ -71,41 +71,44 @@
                                             </tr>
                                         </thead>
                                         <tbody id="tbody">
-
                                         </tbody>
                                     </table>
-                                    <div>
-                                        <button type="button" class="btn btn-success text-light" id="addItem">Add
-                                            item</button>
+
+                                    <button type="button" class="btn btn-success text-light mt-2" id="addItem">Add
+                                        item</button>
+
+                                    <div class="d-flex flex-column gap-2 mt-2">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <label for="subtotal" class="fw-bold">subtotal :</label>
+                                            <input type="number" name="subtotal" id="subtotal" />
+                                        </div>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <label for="discount" class="fw-bold">discount(%) :</label>
+                                            <input type="number" name="discount" id="discount"
+                                                value='{{ $invoice->discount ?? '' }}' />
+                                        </div>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <label for="tax" class="fw-bold">tax(%) :</label>
+                                            <input type="number" name="tax" id="tax"
+                                                value='{{ $invoice->tax ?? '' }}' />
+                                        </div>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <label for="shipping" class="fw-bold">shipping :</label>
+                                            <input type="number" name="shipping" id="shipping"
+                                                value='{{ $invoice->shipping ?? '' }}' />
+                                        </div>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <label for="total" class="fw-bold">total :</label>
+                                            <input type="number" name="total" id="total" />
+                                        </div>
                                     </div>
 
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <span class="fw-bold">subtotal :</span>
-                                        <span id="subtotal"> 0 </span>
-                                    </div>
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <span class="fw-bold">discount(%) :</span>
-                                        <input type="number" id="discount" value='0' />
-                                    </div>
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <span class="fw-bold">tax(%) :</span>
-                                        <input type="number" id="tax" value='0' />
-                                    </div>
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <span class="fw-bold">shipping :</span>
-                                        <input type="number" id="shipping" value='0' />
-                                    </div>
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <span class="fw-bold">total :</span>
-                                        <span id="total">0</span>
-                                    </div>
-
-                                    <input type="hidden" value="{{ $family->id ?? '' }}" name="id" />
+                                    <input type="hidden" value="{{ $invoice->id ?? '' }}" name="id" />
                                 </div>
                                 <div class="border-top">
                                     <div class="card-body">
                                         <button type="submit" class="btn btn-primary">
-                                            @isset($family)
+                                            @isset($invoice)
                                                 Update
                                             @else
                                                 Create
@@ -154,14 +157,15 @@
         function addColumn() {
             let tr = $('<tr></tr>');
 
-            tr.append(`<td><select name="product_option" class="product_option">${options}</select></td>`);
-            tr.append(`<td class="rate">0</td>`);
-            tr.append(`<td><input type="number" name="quantity" class="quantity" value="0" /></td>`);
-            tr.append(`<td class="amount">0</td>`);
-            tr.append(`<td><button type="button" class="btn btn-danger delete-row">X</button></td>`);
+            tr.append(`<td><select name="product_option[]" class="product_option">${options}</select></td>`);
+            tr.append(`<td><input type="number" name="rate[]" class="rate" value="0" /></td>`);
+            tr.append(`<td><input type="number" name="quantity[]" class="quantity" value="0" /></td>`);
+            tr.append(`<td><input type="number" name="amount[]" class="amount" value="0" /></td>`);
+            tr.append(`<td><button type="button" class="btn btn-sm btn-danger rounded-3 delete-row">X</button></td>`);
 
             $('#tbody').append(tr);
         }
+
         //---- add item
         $('#addItem').click(function() {
             addColumn()
@@ -180,7 +184,7 @@
             let currAmount = currTr.find('.amount');
             let currQuantity = currTr.find('.quantity');
 
-            currAmount.html(currRate.html() * currQuantity.val());
+            currAmount.val(currRate.val() * currQuantity.val());
             changeSubtotal()
         }
 
@@ -188,16 +192,16 @@
         function changeSubtotal() {
             let subtotal = 0;
             $('.amount').each(function() {
-                subtotal += parseInt($(this).html());
+                subtotal += parseInt($(this).val());
             });
-            $('#subtotal').html(subtotal);
+            $('#subtotal').val(subtotal);
 
             changeTotal()
         }
 
         //update total
         function changeTotal() {
-            let total = parseInt($('#subtotal').html());
+            let total = parseInt($('#subtotal').val());
             let shippingVal = parseInt($('#shipping').val()) || 0;
 
             total -= (($('#discount').val() * total) / 100);
@@ -205,7 +209,7 @@
             total += shippingVal;
 
             console.log("total ", shippingVal)
-            $('#total').html(total);
+            $('#total').val(total);
         }
 
         $(document).on('change', '.product_option', function() {
@@ -213,7 +217,7 @@
             let currRate = currTr.find('.rate');
             let currProduct = product.find(item => item.id == $(this).val());
 
-            currRate.html(currProduct.price);
+            currRate.val(currProduct.price);
             changeAmount(currTr)
         });
 

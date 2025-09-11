@@ -24,7 +24,6 @@ class FamilyController extends Controller
 
         $families = $query->offset($start)->limit($length)->get();
 
-
         $recordsTotal = Family::where('employee_id', $employId)->count();
 
         $data = $families->map(function ($family) use ($employId) {

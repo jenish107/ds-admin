@@ -7,7 +7,6 @@
     <x-layout>
         <div class="card">
             <div class="card-body">
-
                 @if (session('message'))
                     <h2 class="text-success">{{ session('message') }}</h2>
                 @endif
@@ -17,7 +16,7 @@
                         <div class="card">
 
                             <form class="form-horizontal"
-                                action="{{ isset($invoice) ? route('updateFamily') : route('addInvoice') }}" method="POST">
+                                action="{{ isset($invoice) ? route('updateInvoice') : route('addInvoice') }}" method="POST">
                                 @csrf
                                 @isset($invoice)
                                     @method('PUT')
@@ -38,7 +37,7 @@
                                         <div class="col-sm-9">
                                             <input required type="text" class="form-control" name="customer_name"
                                                 id="customer_name" placeholder="Enter Customer Name Here"
-                                                value="{{ $obj->customer_name ?? '' }}" />
+                                                value="{{ $invoice->customer_name ?? '' }}" />
                                             @error('customer_name')
                                                 <div>
                                                     {{ $message }}
@@ -80,26 +79,28 @@
                                     <div class="d-flex flex-column gap-2 mt-2">
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="subtotal" class="fw-bold">subtotal :</label>
-                                            <input type="number" name="subtotal" id="subtotal" />
+                                            <input type="number" name="subtotal" id="subtotal"
+                                                value='{{ $invoice->subtotal ?? '0' }}' />
                                         </div>
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="discount" class="fw-bold">discount(%) :</label>
                                             <input type="number" name="discount" id="discount"
-                                                value='{{ $invoice->discount ?? '' }}' />
+                                                value='{{ $invoice->discount ?? '0' }}' />
                                         </div>
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="tax" class="fw-bold">tax(%) :</label>
                                             <input type="number" name="tax" id="tax"
-                                                value='{{ $invoice->tax ?? '' }}' />
+                                                value='{{ $invoice->tax ?? '0' }}' />
                                         </div>
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="shipping" class="fw-bold">shipping :</label>
                                             <input type="number" name="shipping" id="shipping"
-                                                value='{{ $invoice->shipping ?? '' }}' />
+                                                value='{{ $invoice->shipping ?? '0' }}' />
                                         </div>
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="total" class="fw-bold">total :</label>
-                                            <input type="number" name="total" id="total" />
+                                            <input type="number" name="total" id="total"
+                                                value='{{ $invoice->total ?? '0' }}' />
                                         </div>
                                     </div>
 
@@ -132,7 +133,18 @@
 @push('scripts')
     <script>
         let product;
-        let options = "";
+        let invoice = @json($invoice->invoiceItem ?? []);
+
+        function loadProductOptions(selectElement, selectedId = null) {
+            selectElement.append(`<option value="">Select</option>`);
+
+            product.forEach((product) => {
+                let isSelected = (selectedId && selectedId == product.id) ? 'selected' : '';
+                selectElement.append(
+                    `<option value="${product.id}" ${isSelected}>${product.product_name}</option>`
+                );
+            });
+        }
 
         $(document).ready(function() {
             $.ajax({
@@ -140,13 +152,11 @@
                 type: 'GET',
                 success: function(response) {
                     product = response;
-
-                    options = `<option value="select">Select</option>`;
-                    response.forEach((product) => {
-                        options +=
-                            `<option value="${product.id}">${product.product_name}</option>`;
-                    });
-                    addColumn();
+                    if (invoice.length == 0) {
+                        addColumn()
+                    } else {
+                        loadColumn()
+                    }
                 },
                 error: function(error) {
                     console.log('Error in get products', error);
@@ -154,13 +164,47 @@
             })
         });
 
-        function addColumn() {
+        function loadColumn() {
+            invoice.forEach((item) => {
+                addColumn(item);
+
+                // let tr = $('<tr></tr>');
+
+                // tr.append(`<td><select name="product_option[]" class="product_option"></select></td>`);
+                // let currOption = tr.find('.product_option');
+                // loadProductOptions(currOption, item.product_id);
+                // tr.append(
+                //     `<td><input type="number" name="rate[]" class="rate" value="${item['product']['price']}" /></td>`
+                // );
+                // tr.append(
+                //     `<td><input type="number" name="quantity[]" class="quantity" value="${item['quantity']}" /></td>`
+                // );
+                // tr.append(
+                //     `<td><input type="number" name="amount[]" class="amount" value="${item['amount']}" /></td>`);
+                // tr.append(
+                //     `<td><button type="button" class="btn btn-sm btn-danger rounded-3 delete-row">X</button></td>`
+                // );
+
+                // $('#tbody').append(tr);
+            });
+        }
+
+        function addColumn(item = null) {
             let tr = $('<tr></tr>');
 
-            tr.append(`<td><select name="product_option[]" class="product_option">${options}</select></td>`);
-            tr.append(`<td><input type="number" name="rate[]" class="rate" value="0" /></td>`);
-            tr.append(`<td><input type="number" name="quantity[]" class="quantity" value="0" /></td>`);
-            tr.append(`<td><input type="number" name="amount[]" class="amount" value="0" /></td>`);
+            tr.append(`<td><select name="product_option[]" class="product_option"></select></td>`);
+            let currOption = tr.find('.product_option');
+            loadProductOptions(currOption, item?.product_id);
+
+            tr.append(
+                `<td><input type="number" name="rate[]" class="rate" value="${item ? item['product']['price'] : 0}" /></td>`
+            );
+            tr.append(
+                `<td><input type="number" name="quantity[]" class="quantity" value="${item ? item['quantity'] : 0}" /></td>`
+            );
+            tr.append(
+                `<td><input type="number" name="amount[]" class="amount" value="${item ? item['amount'] : 0}" /></td>`
+            );
             tr.append(`<td><button type="button" class="btn btn-sm btn-danger rounded-3 delete-row">X</button></td>`);
 
             $('#tbody').append(tr);
@@ -208,7 +252,6 @@
             total += (($('#tax').val() * total) / 100);
             total += shippingVal;
 
-            console.log("total ", shippingVal)
             $('#total').val(total);
         }
 

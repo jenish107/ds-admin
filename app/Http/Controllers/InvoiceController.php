@@ -14,9 +14,16 @@ class InvoiceController extends Controller
     {
         return view('invoice.invoiceList');
     }
-    public function showInvoiceForm()
+    public function showInvoiceForm($id = null)
     {
-        return view('invoice.invoice');
+        if ($id != null) {
+            $invoice = Invoice::withWhereHas('invoiceItem', function ($query) use ($id) {
+                $query->where('invoice_id', $id);
+            })->with('invoiceItem.product')->find($id);
+            return view('invoice.invoice', ["invoice" => $invoice]);
+        } else {
+            return view('invoice.invoice');
+        }
     }
 
     public function getAllInvoice(Request $request)
@@ -84,15 +91,51 @@ class InvoiceController extends Controller
             'total' => $request->total,
         ]);
 
+        InvoiceItem::where('invoice_id', $invoice->id)->delete();
+
         foreach ($request->product_option as $index => $product_id) :
-            $invoiceItem = new InvoiceItem;
-            $invoiceItem->quantity = $validation['quantity'][$index];
-            $invoiceItem->amount =  $request->amount[$index];
-            $invoiceItem->product_id = $product_id;
+            InvoiceItem::create([
+                "quantity" => $validation['quantity'][$index],
+                "amount" =>  $request->amount[$index],
+                "product_id" => $product_id,
+                "invoice_id" => $invoice->id,
+            ]);
+        endforeach;
 
-            $invoiceItem->invoice_id = $invoice->id;
+        return redirect()->route('showInvoiceList');
+    }
 
-            $invoiceItem->save();
+    public function updateInvoice(Request $request)
+    {
+        $validation = $request->validate([
+            'customer_name' => 'required',
+            'customer_email' => 'required',
+            'product_option' => 'required',
+            'quantity' => 'required',
+        ]);
+
+        $invoice = Invoice::find($request->id);
+
+        $invoice->update([
+            'customer_name' => $validation['customer_name'],
+            'customer_email' => $validation['customer_email'],
+            'user_id' => Auth::id(),
+            'subtotal' => $request->subtotal,
+            'discount' => $request->discount,
+            'tax' => $request->tax,
+            'shipping' => $request->shipping,
+            'total' => $request->total,
+        ]);
+
+        InvoiceItem::where('invoice_id', $invoice->id)->delete();
+
+        foreach ($request->product_option as $index => $product_id) :
+            InvoiceItem::create([
+                "quantity" => $validation['quantity'][$index],
+                "amount" =>  $request->amount[$index],
+                "product_id" => $product_id,
+                "invoice_id" => $invoice->id,
+            ]);
         endforeach;
 
         return redirect()->route('showInvoiceList');

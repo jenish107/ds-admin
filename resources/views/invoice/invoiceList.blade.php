@@ -12,7 +12,7 @@
                 <h5 class="card-title">Invoice List</h5>
 
                 <div class="d-flex align-items-end justify-content-between mb-3">
-                    <a href="" class="btn btn-success text-light">
+                    <a href="{{ route('showInvoiceForm') }}" class="btn btn-success text-light">
                         Add New Invoice
                     </a>
                 </div>

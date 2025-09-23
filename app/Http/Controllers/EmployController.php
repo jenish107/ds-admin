@@ -35,7 +35,7 @@ class EmployController extends Controller
                     <a href="' . route('showAllFamily', $employ->id) . '">
                         <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
                     </a>
-                    <a href="' . route('showUpdateEmployForm', [$employ->id, $departmentId]) . '" 
+                    <a href="' . route('showEmployForm', [$departmentId, $employ->id,]) . '" 
                        class="btn btn-success btn-sm text-white">Edit</a>
                     <button type="button" data-id="' . $employ->id . '" 
                        class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
@@ -55,14 +55,14 @@ class EmployController extends Controller
         $obj = Department::where('id', $departmentId)->with('company')->select('id', 'company_id', 'name')->first();
         return view('employ.employ', ['department' => $obj]);
     }
-    public function showEmployForm($departmentId)
+    public function showEmployForm($departmentId, $id = null)
     {
-        return view('employ.form', ["departmentId" => $departmentId]);
-    }
-    public function showUpdateEmployForm($id, $departmentId)
-    {
-        $employ = Employ::find($id);
-        return view('employ.form', compact('employ', 'departmentId'));
+        if ($id) {
+            $employ = Employ::find($id);
+            return view('employ.form', compact('employ', 'departmentId'));
+        } else {
+            return view('employ.form', ["departmentId" => $departmentId]);
+        }
     }
 
     public function updateEmploy(Request $request)

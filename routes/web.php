@@ -52,36 +52,32 @@ Route::middleware('IsLogin')->group(function () {
     //-----companies ----
     Route::get('/get-all-companies', [CompanyController::class, 'allCompanies'])->name('getAllCompanies');
     Route::get('/companies-data', [CompanyController::class, 'showCompanies'])->name('showAllCompanies');
-    Route::get('/show-companies-form', [CompanyController::class, 'showCompaniesForm'])->name('showCompaniesForm');
+    Route::get('/show-companies-form/{id?}', [CompanyController::class, 'showCompaniesForm'])->name('showCompaniesForm');
     Route::post('/add-companies', [CompanyController::class, 'createCompanies'])->name('addCompanies');
-    Route::get('/show-update-companies-form/{id}', [CompanyController::class, 'showUpdateCompaniesForm'])->name('showUpdateCompaniesForm');
     Route::put('/update-companies', [CompanyController::class, 'updateCompanies'])->name('updateCompanies');
     Route::delete('/delete-companies/{id}', [CompanyController::class, 'deleteCompanies'])->name('deleteCompanies');
 
     //-----department ----
     Route::get('/get-all-department/{companyId}', [DepartmentController::class, 'allDepartment'])->name('getAllDepartment');
     Route::get('/department-data/{companyId}', [DepartmentController::class, 'showDepartment'])->name('showAllDepartment');
-    Route::get('/show-department-form/{companyId}', [DepartmentController::class, 'showDepartmentForm'])->name('showDepartmentForm');
+    Route::get('/show-department-form/{companyId}/{id?}', [DepartmentController::class, 'showDepartmentForm'])->name('showDepartmentForm');
     Route::post('/add-department', [DepartmentController::class, 'createDepartment'])->name('addDepartment');
-    Route::get('/show-update-department-form/{id}/{companyId}', [DepartmentController::class, 'showUpdateDepartmentForm'])->name('showUpdateDepartmentForm');
     Route::put('/update-department', [DepartmentController::class, 'updateDepartment'])->name('updateDepartment');
     Route::delete('/delete-department/{id}', [DepartmentController::class, 'deleteDepartment'])->name('deleteDepartment');
 
     //-----employ ----
     Route::get('/get-all-employ/{departmentId}', [EmployController::class, 'allEmploy'])->name('getAllEmploy');
     Route::get('/employ-data/{departmentId}', [EmployController::class, 'showEmploy'])->name('showAllEmploy');
-    Route::get('/show-employ-form/{departmentId}', [EmployController::class, 'showEmployForm'])->name('showEmployForm');
+    Route::get('/show-employ-form/{departmentId}/{id?}', [EmployController::class, 'showEmployForm'])->name('showEmployForm');
     Route::post('/add-employ', [EmployController::class, 'createEmploy'])->name('addEmploy');
-    Route::get('/show-update-employ-form/{id}/{departmentId}', [EmployController::class, 'showUpdateEmployForm'])->name('showUpdateEmployForm');
     Route::put('/update-employ', [EmployController::class, 'updateEmploy'])->name('updateEmploy');
     Route::delete('/delete-employ/{id}', [EmployController::class, 'deleteEmploy'])->name('deleteEmploy');
 
     //-----family ----
     Route::get('/get-all-family/{employId}', [FamilyController::class, 'allFamily'])->name('getAllFamily');
     Route::get('/family-data/{employId}', [FamilyController::class, 'showFamily'])->name('showAllFamily');
-    Route::get('/show-family-form/{employId}', [FamilyController::class, 'showFamilyForm'])->name('showFamilyForm');
+    Route::get('/show-family-form/{employId}/{id?}', [FamilyController::class, 'showFamilyForm'])->name('showFamilyForm');
     Route::post('/add-family', [FamilyController::class, 'createFamily'])->name('addFamily');
-    Route::get('/show-update-family-form/{id}/{departmentId}', [FamilyController::class, 'showUpdateFamilyForm'])->name('showUpdateFamilyForm');
     Route::put('/update-family', [FamilyController::class, 'updateFamily'])->name('updateFamily');
     Route::delete('/delete-family/{id}', [FamilyController::class, 'deleteFamily'])->name('deleteFamily');
 
@@ -89,7 +85,6 @@ Route::middleware('IsLogin')->group(function () {
     Route::controller(InvoiceController::class)->group(function () {
         Route::prefix('/invoice')->group(function () {
             Route::get('/get-products', 'getProduct')->name('getProduct');
-
             Route::get('/list', 'invoiceList')->name('showInvoiceList');
             Route::get('/get-list', 'getAllInvoice')->name('getAllInvoice');
             Route::get('/form/{id?}', 'showInvoiceForm')->name('showInvoiceForm');

@@ -35,7 +35,7 @@ class DepartmentController extends Controller
                     <a href="' . route('showAllEmploy', $department->id) . '">
                         <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
                     </a>
-                    <a href="' . route('showUpdateDepartmentForm', [$department->id, $companyId]) . '" 
+                    <a href="' . route('showDepartmentForm', [$companyId, $department->id]) . '" 
                        class="btn btn-success btn-sm text-white">Edit</a>
                     <button type="button" data-id="' . $department->id . '" 
                        class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
@@ -55,14 +55,14 @@ class DepartmentController extends Controller
         $company = Company::where('id', $companyId)->with('department')->get()->first();
         return view('department.department', ['company' => $company]);
     }
-    public function showDepartmentForm($companyId)
+    public function showDepartmentForm($companyId, $id = null)
     {
-        return view('department.form', ["companyId" => $companyId]);
-    }
-    public function showUpdateDepartmentForm($id, $companyId)
-    {
-        $department = Department::find($id);
-        return view('department.form', compact('department', 'companyId'));
+        if ($id) {
+            $department = Department::find($id);
+            return view('department.form', compact('department', 'companyId'));
+        } else {
+            return view('department.form', ["companyId" => $companyId]);
+        }
     }
 
     public function updateDepartment(Request $request)

@@ -33,7 +33,7 @@ class FamilyController extends Controller
                 'last_name'  => $family->fullNameParts['last_name'],
                 'email'      => $family->email,
                 'action'     => '
-                    <a href="' . route('showUpdateFamilyForm', [$family->id, $employId]) . '" 
+                    <a href="' . route('showFamilyForm', [$employId, $family->id]) . '" 
                        class="btn btn-success btn-sm text-white">Edit</a>
                     <button type="button" data-id="' . $family->id . '" 
                        class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
@@ -56,15 +56,14 @@ class FamilyController extends Controller
         return view('family.family', ['employ' => $employ]);
     }
 
-    public function showFamilyForm($employId)
+    public function showFamilyForm($employId, $id = null)
     {
-        return view('family.form', ["employId" => $employId]);
-    }
-
-    public function showUpdateFamilyForm($id, $employId)
-    {
-        $family = Family::find($id);
-        return view('family.form', compact('family', 'employId'));
+        if ($id) {
+            $family = Family::find($id);
+            return view('family.form', compact('family', 'employId'));
+        } else {
+            return view('family.form', ["employId" => $employId]);
+        }
     }
 
     public function updateFamily(Request $request)
@@ -72,16 +71,17 @@ class FamilyController extends Controller
         $validate = $request->validate([
             'first_name' => 'required',
             'last_name' => 'required',
-            'email' => 'required',
+            'email' => 'required|email',
         ]);
 
-        Family::where('id',  $request->input('id'))->update([
-            'full_name' => [
-                'first_name' => $request->input('first_name'),
-                'last_name' => $request->input('last_name'),
-            ],
-            'email' => $request->input('email'),
-        ]);
+        $family = Family::find($request->input('id'));
+        $family->full_name = [
+            'first_name' => $request->input('first_name'),
+            'last_name'  => $request->input('last_name'),
+        ];
+        $family->email = $request->input('email');
+        $family->save();
+
         return redirect()->route('showAllFamily', $request->input('parentId'));
     }
 

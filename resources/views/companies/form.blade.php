@@ -6,11 +6,7 @@
 
 @section('main')
     <x-layout>
-        @isset($companies)
-            <x-form name="Companies" routeName="updateCompanies" :obj="$companies" />
-        @else
-            <x-form name="Companies" routeName="addCompanies" />
-        @endisset
+        <x-form name="Companies" :routeName="isset($companies) ? 'updateCompanies' : 'addCompanies'" :obj="$companies ?? null" />
     </x-layout>
 @endsection
 

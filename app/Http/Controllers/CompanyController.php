@@ -33,7 +33,7 @@ class CompanyController extends Controller
                     <a href="' . route('showAllDepartment', $company->id) . '">
                         <i class="mdi mdi-account-multiple btn btn-info btn-sm"></i>
                     </a>
-                    <a href="' . route('showUpdateCompaniesForm', $company->id) . '" 
+                    <a href="' . route('showCompaniesForm', $company->id) . '" 
                        class="btn btn-success btn-sm text-white">Edit</a>
                     <button type="button" data-id="' . $company->id . '" 
                        class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
@@ -52,14 +52,14 @@ class CompanyController extends Controller
     {
         return view('companies.companies');
     }
-    public function showCompaniesForm()
+    public function showCompaniesForm($id = null)
     {
-        return view('companies.form');
-    }
-    public function showUpdateCompaniesForm($id)
-    {
-        $companies = Company::find($id);
-        return view('companies.form', compact('companies'));
+        if ($id) {
+            $companies = Company::find($id);
+            return view('companies.form', compact('companies'));
+        } else {
+            return view('companies.form');
+        }
     }
 
     public function updateCompanies(Request $request)

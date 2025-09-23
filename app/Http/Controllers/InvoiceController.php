@@ -14,13 +14,15 @@ class InvoiceController extends Controller
     {
         return view('invoice.invoiceList');
     }
+
     public function showInvoiceForm($id = null)
     {
         if ($id != null) {
             $invoice = Invoice::withWhereHas('invoiceItem', function ($query) use ($id) {
                 $query->where('invoice_id', $id);
             })->with('invoiceItem.product')->find($id);
-            return view('invoice.invoice', ["invoice" => $invoice]);
+
+            return view('invoice.invoice', ['invoice' => $invoice]);
         } else {
             return view('invoice.invoice');
         }
@@ -29,7 +31,7 @@ class InvoiceController extends Controller
     public function getAllInvoice(Request $request)
     {
         $length = $request->input('length');
-        $start  = $request->input('start');
+        $start = $request->input('start');
         $search = $request->input('search.value');
 
         $query = Invoice::with('user');
@@ -55,9 +57,9 @@ class InvoiceController extends Controller
                 'customer_email' => $invoice->customer_email,
                 'user' => $invoice->user->userName,
                 'action' => '
-                    <a href="' . route('showInvoiceForm', [$invoice->id]) . '" 
+                    <a href="'.route('showInvoiceForm', [$invoice->id]).'" 
                        class="btn btn-success btn-sm text-white">Edit</a>
-                    <button type="button" data-id="' . $invoice->id . '" 
+                    <button type="button" data-id="'.$invoice->id.'" 
                        class="btn btn-danger btn-sm text-white delete_btn">Delete</button>
                 ',
             ];
@@ -76,8 +78,7 @@ class InvoiceController extends Controller
         $validation = $request->validate([
             'customer_name' => 'required',
             'customer_email' => 'required',
-            'product_option' => 'required',
-            'quantity' => 'required',
+            'items' => 'required',
         ]);
 
         $invoice = Invoice::create([
@@ -91,16 +92,14 @@ class InvoiceController extends Controller
             'total' => $request->total,
         ]);
 
-        InvoiceItem::where('invoice_id', $invoice->id)->delete();
-
-        foreach ($request->product_option as $index => $product_id) :
+        foreach ($request->items as $item) {
             InvoiceItem::create([
-                "quantity" => $validation['quantity'][$index],
-                "amount" =>  $request->amount[$index],
-                "product_id" => $product_id,
-                "invoice_id" => $invoice->id,
+                'quantity' => $item['quantity'],
+                'amount' => $item['amount'],
+                'product_id' => $item['product_option'],
+                'invoice_id' => $invoice->id,
             ]);
-        endforeach;
+        }
 
         return redirect()->route('showInvoiceList');
     }
@@ -110,13 +109,14 @@ class InvoiceController extends Controller
         $validation = $request->validate([
             'customer_name' => 'required',
             'customer_email' => 'required',
-            'product_option' => 'required',
-            'quantity' => 'required',
+            'items' => 'required',
         ]);
+        $user = Auth::user();
+        if(empty($user)) return;
 
-        $invoice = Invoice::find($request->id);
-
-        $invoice->update([
+        $invoice = $user->invoice()->updateOrCreate([
+                'id' => $request->id
+            ],[
             'customer_name' => $validation['customer_name'],
             'customer_email' => $validation['customer_email'],
             'user_id' => Auth::id(),
@@ -126,20 +126,27 @@ class InvoiceController extends Controller
             'shipping' => $request->shipping,
             'total' => $request->total,
         ]);
-
-        InvoiceItem::where('invoice_id', $invoice->id)->delete();
-
-        foreach ($request->product_option as $index => $product_id) :
-            InvoiceItem::create([
-                "quantity" => $validation['quantity'][$index],
-                "amount" =>  $request->amount[$index],
-                "product_id" => $product_id,
-                "invoice_id" => $invoice->id,
+        $oldId = $invoice->invoiceItem()->get()->pluck('id')->toArray();
+        $newId = [];
+      
+        foreach ($request->items as $item) {
+            $newInvoiceItem = $invoice->invoiceItem()->updateOrCreate(
+                [
+                 'product_id' => $item['product_option'],
+                ], [
+                'quantity' => $item['quantity'],
+                'amount' => $item['amount'],
+                'product_id' => $item['product_option'],
+                'invoice_id' => $invoice->id,
             ]);
-        endforeach;
+            $newId[] = $newInvoiceItem->id;
+        }
+
+        $invoice->invoiceItem()->whereIn('id',array_diff($oldId,$newId))->delete();
 
         return redirect()->route('showInvoiceList');
     }
+
     public function getProduct()
     {
         return Product::get();

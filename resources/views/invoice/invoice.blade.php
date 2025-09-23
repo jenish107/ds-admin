@@ -37,7 +37,7 @@
                                         <div class="col-sm-9">
                                             <input required type="text" class="form-control" name="customer_name"
                                                 id="customer_name" placeholder="Enter Customer Name Here"
-                                                value="{{ $invoice->customer_name ?? '' }}" />
+                                                value="{{ old('customer_name', $invoice->customer_name ?? '') }}" />
                                             @error('customer_name')
                                                 <div>
                                                     {{ $message }}
@@ -50,8 +50,9 @@
                                         <label for="customer_email" class="col-md-3">Email</label>
                                         <div class="col-sm-9">
                                             <input required type="email" class="form-control"
-                                                value="{{ $invoice->customer_email ?? '' }}" name="customer_email"
-                                                id="customer_email" placeholder="Enter customer email " />
+                                                value="{{ old('customer_email', $invoice->customer_email ?? '') }}"
+                                                name="customer_email" id="customer_email"
+                                                placeholder="Enter customer email " />
                                             @error('customer_email')
                                                 <div>
                                                     {{ $message }}
@@ -69,7 +70,7 @@
                                                 <th scope="col">Amount</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="tbody">
+                                        <tbody id="tbody" class="form-group">
                                         </tbody>
                                     </table>
 
@@ -79,28 +80,31 @@
                                     <div class="d-flex flex-column gap-2 mt-2">
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="subtotal" class="fw-bold">subtotal :</label>
-                                            <input type="number" name="subtotal" id="subtotal"
-                                                value='{{ $invoice->subtotal ?? '0' }}' />
+                                            <input style="width: 10rem" class="form-control" type="number" name="subtotal"
+                                                id="subtotal" readonly
+                                                value='{{ old('subtotal', $invoice->subtotal ?? 0) }}' />
                                         </div>
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="discount" class="fw-bold">discount(%) :</label>
-                                            <input type="number" name="discount" id="discount"
-                                                value='{{ $invoice->discount ?? '0' }}' />
+                                            <input style="width: 10rem" class="form-control" type="number" name="discount"
+                                                id="discount" value='{{ old('discount', $invoice->discount ?? 0) }}' />
                                         </div>
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="tax" class="fw-bold">tax(%) :</label>
-                                            <input type="number" name="tax" id="tax"
-                                                value='{{ $invoice->tax ?? '0' }}' />
+                                            <input style="width: 10rem" class="form-control" type="number" name="tax"
+                                                id="tax" value="{{ old('tax', $invoice->tax ?? 0) }}" />
                                         </div>
+
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="shipping" class="fw-bold">shipping :</label>
-                                            <input type="number" name="shipping" id="shipping"
-                                                value='{{ $invoice->shipping ?? '0' }}' />
+                                            <input style="width: 10rem" class="form-control" type="number" name="shipping"
+                                                id="shipping" value="{{ old('shipping', $invoice->shipping ?? 0) }}" />
                                         </div>
+
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="total" class="fw-bold">total :</label>
-                                            <input type="number" name="total" id="total"
-                                                value='{{ $invoice->total ?? '0' }}' />
+                                            <input style="width: 10rem" class="form-control" type="number" name="total"
+                                                id="total" readonly value="{{ old('total', $invoice->total ?? 0) }}" />
                                         </div>
                                     </div>
 
@@ -121,7 +125,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
         <x-slot:breadcrumb>
@@ -138,14 +141,19 @@
         function loadProductOptions(selectElement, selectedId = null) {
             selectElement.append(`<option value="">Select</option>`);
 
+            var product_ids = $('.product_option').map(function() {
+                return Number(this.value);
+            }).get();
+
             product.forEach((product) => {
-                let isSelected = (selectedId && selectedId == product.id) ? 'selected' : '';
-                selectElement.append(
-                    `<option value="${product.id}" ${isSelected}>${product.product_name}</option>`
-                );
+                if (!product_ids.includes(product.id)) {
+                    let isSelected = (selectedId && selectedId == product.id) ? 'selected' : '';
+                    selectElement.append(
+                        `<option value="${product.id}" ${isSelected}>${product.product_name}</option>`
+                    );
+                }
             });
         }
-
         $(document).ready(function() {
             $.ajax({
                 url: '/invoice/get-products',
@@ -167,58 +175,86 @@
         function loadColumn() {
             invoice.forEach((item) => {
                 addColumn(item);
-
-                // let tr = $('<tr></tr>');
-
-                // tr.append(`<td><select name="product_option[]" class="product_option"></select></td>`);
-                // let currOption = tr.find('.product_option');
-                // loadProductOptions(currOption, item.product_id);
-                // tr.append(
-                //     `<td><input type="number" name="rate[]" class="rate" value="${item['product']['price']}" /></td>`
-                // );
-                // tr.append(
-                //     `<td><input type="number" name="quantity[]" class="quantity" value="${item['quantity']}" /></td>`
-                // );
-                // tr.append(
-                //     `<td><input type="number" name="amount[]" class="amount" value="${item['amount']}" /></td>`);
-                // tr.append(
-                //     `<td><button type="button" class="btn btn-sm btn-danger rounded-3 delete-row">X</button></td>`
-                // );
-
-                // $('#tbody').append(tr);
             });
         }
 
         function addColumn(item = null) {
             let tr = $('<tr></tr>');
+            let currIndex = $('#tbody').children().length;
 
-            tr.append(`<td><select name="product_option[]" class="product_option"></select></td>`);
+            tr.append(
+                `<td><select name="items[${currIndex}][product_option]" class="product_option form-select"></select></td>`
+            );
             let currOption = tr.find('.product_option');
             loadProductOptions(currOption, item?.product_id);
 
             tr.append(
-                `<td><input type="number" name="rate[]" class="rate" value="${item ? item['product']['price'] : 0}" /></td>`
+                `<td><input type="number" style="width: 6rem"  name="items[${currIndex}][rate]" class="rate form-control" readonly value="${item ? item['product']['price'] : 0}" /></td>`
             );
             tr.append(
-                `<td><input type="number" name="quantity[]" class="quantity" value="${item ? item['quantity'] : 0}" /></td>`
+                `<td><input type="number" style="width: 6rem"  name="items[${currIndex}][quantity]" data-index="${currIndex}" class="quantity form-control" value="${item ? item['quantity'] : 1}" /> 
+                <div class="text-danger visually-hidden" id="quantity-alert-${currIndex}">
+                    Enter Quantity
+                </div></td>`
             );
             tr.append(
-                `<td><input type="number" name="amount[]" class="amount" value="${item ? item['amount'] : 0}" /></td>`
+                `<td><input type="number" style="width: 6rem"  name="items[${currIndex}][amount]" class="amount form-control" readonly value="${item ? item['amount'] : 0}" /></td>`
             );
-            tr.append(`<td><button type="button" class="btn btn-sm btn-danger rounded-3 delete-row">X</button></td>`);
+            tr.append(
+                `<td class="d-flex align-items-center"><button type="button" class="btn btn-sm btn-danger rounded-3 delete-row">X</button></td>`
+            );
 
             $('#tbody').append(tr);
+            toggleDelete();
+        }
+
+        function toggleDelete() {
+            if ($('#tbody').children().length <= 1) {
+                $('#tbody tr .delete-row').remove()
+            } else {
+                if ($('#tbody tr:first td:last').is(':empty')) {
+                    $('#tbody tr:first td:last').append(
+                        `<button type="button" class="btn btn-sm btn-danger rounded-3 delete-row">X</button>`)
+                }
+            }
         }
 
         //---- add item
         $('#addItem').click(function() {
-            addColumn()
+            let flag = 0;
+
+            $('.rate').each(function() {
+                if ($(this).val() == 0) {
+                    // alert('Enter item')
+                    $(this).removeClass('visually-hidden')
+                    flag = 1;
+                }
+            })
+            $('.quantity').each(function() {
+                flag = checkQuantity($(this));
+            })
+            if (flag == 0) {
+                addColumn()
+            }
         });
+
+        //--- check is quntity
+        function checkQuantity(field) {
+            let index = $(field).data('index');
+            console.log('$(field).val() --', $(field).val());
+            if ($(field).val() > 0) {
+                $(`#quantity-alert-${index}`).addClass('visually-hidden')
+                return 0;
+            } else {
+                $(`quantity-alert-${index}`).removeClass('visually-hidden');
+                return 1;
+            }
+        }
 
         //--- delete item
         $(document).on('click', '.delete-row', function() {
             $(this).closest('tr').remove();
-
+            toggleDelete();
             changeSubtotal();
         });
 
@@ -266,6 +302,7 @@
 
         $(document).on('keyup', '.quantity', function() {
             let currTr = $(this).closest('tr');
+            checkQuantity($(this))
             changeAmount(currTr)
         });
 

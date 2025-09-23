@@ -6,7 +6,6 @@
 
 @section('main')
     <x-layout>
-
         @if (session('message'))
             <h2 class="text-success">{{ session('message') }}</h2>
         @endif
@@ -42,7 +41,8 @@
                                 <label for="first_name" class="col-md-3">first name</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" name="first_name" id="first_name"
-                                        placeholder="Enter first name" value="{{ $family->first_name ?? '' }}" />
+                                        placeholder="Enter first name"
+                                        value="{{ $family->fullNameParts['first_name'] ?? '' }}" />
                                     @error('first_name')
                                         <div>
                                             {{ $message }}
@@ -54,7 +54,8 @@
                                 <label for="last_name" class="col-md-3">last name</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" name="last_name" id="last_name"
-                                        placeholder="Enter last name" value="{{ $family->last_name ?? '' }}" />
+                                        placeholder="Enter last name"
+                                        value="{{ $family->fullNameParts['last_name'] ?? '' }}" />
                                     @error('last_name')
                                         <div>
                                             {{ $message }}
@@ -96,11 +97,6 @@
             </div>
         </div>
 
-        {{-- @isset($family)
-            <x-form name="Family" routeName="updateFamily" :parentId="$employId" :obj="$family" />
-        @else
-            <x-form name="Family" routeName="addFamily" :parentId="$employId" />
-        @endisset --}}
     </x-layout>
 @endsection
 

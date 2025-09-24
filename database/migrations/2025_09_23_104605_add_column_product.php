@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('product', function (Blueprint $table) {
-            $table()->sgst();
-            $table()->ugst();
-            $table()->cgst();
-            $table()->igst();
+            $table->integer('sgst')->nullable();
+            $table->integer('ugst')->nullable();
+            $table->integer('cgst')->nullable();
+            $table->integer('igst')->nullable();
         });
     }
 
@@ -25,7 +25,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('product', function (Blueprint $table) {
-            //
+            $table->dropColumn('sgst');
+            $table->dropColumn('ugst');
+            $table->dropColumn('cgst');
+            $table->dropColumn('igst');
         });
     }
 };

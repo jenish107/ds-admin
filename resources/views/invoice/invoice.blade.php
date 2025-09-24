@@ -66,6 +66,10 @@
                                             <tr>
                                                 <th scope="col" class="w-75">Item</th>
                                                 <th scope="col">Rate</th>
+                                                <th scope="col">SGST(%)</th>
+                                                <th scope="col">UGST(%)</th>
+                                                <th scope="col">CGST(%)</th>
+                                                <th scope="col">IGST(%)</th>
                                                 <th scope="col">Quantity</th>
                                                 <th scope="col">Amount</th>
                                             </tr>
@@ -183,7 +187,10 @@
             let currIndex = $('#tbody').children().length;
 
             tr.append(
-                `<td><select name="items[${currIndex}][product_option]" class="product_option form-select"></select></td>`
+                `<td><select name="items[${currIndex}][product_option]" data-index='${currIndex}' class="product_option form-select"></select>
+                <div class="text-danger visually-hidden" id="product-alert-${currIndex}">
+                    Enter Quantity
+                </div></td>`
             );
             let currOption = tr.find('.product_option');
             loadProductOptions(currOption, item?.product_id);
@@ -191,6 +198,19 @@
             tr.append(
                 `<td><input type="number" style="width: 6rem"  name="items[${currIndex}][rate]" class="rate form-control" readonly value="${item ? item['product']['price'] : 0}" /></td>`
             );
+            tr.append(
+                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][sgst]" class="sgst form-control" readonly value="${item ? item['sgst'] : 0}" /></td>`
+            );
+            tr.append(
+                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][ugst]" class="ugst form-control" readonly value="${item ? item['ugst'] : 0}" /></td>`
+            );
+            tr.append(
+                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][cgst]" class="cgst form-control" readonly value="${item ? item['cgst'] : 0}" /></td>`
+            );
+            tr.append(
+                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][igst]" class="igst form-control" readonly value="${item ? item['igst'] : 0}" /></td>`
+            );
+
             tr.append(
                 `<td><input type="number" style="width: 6rem"  name="items[${currIndex}][quantity]" data-index="${currIndex}" class="quantity form-control" value="${item ? item['quantity'] : 1}" /> 
                 <div class="text-danger visually-hidden" id="quantity-alert-${currIndex}">
@@ -221,32 +241,32 @@
 
         //---- add item
         $('#addItem').click(function() {
-            let flag = 0;
+            let product = 0;
+            let quantity = 0;
 
-            $('.rate').each(function() {
-                if ($(this).val() == 0) {
+            $('.product_option').each(function() {
+                if (!$(this).val()) {
                     // alert('Enter item')
-                    $(this).removeClass('visually-hidden')
-                    flag = 1;
+                    product = checkError($(this), 'product');
                 }
             })
             $('.quantity').each(function() {
-                flag = checkQuantity($(this));
+                quantity = checkError($(this), 'quantity');
             })
-            if (flag == 0) {
+            if (quantity == 0 && product == 0) {
                 addColumn()
             }
         });
 
-        //--- check is quntity
-        function checkQuantity(field) {
+        //--- check is error
+        function checkError(field, name) {
             let index = $(field).data('index');
-            console.log('$(field).val() --', $(field).val());
-            if ($(field).val() > 0) {
-                $(`#quantity-alert-${index}`).addClass('visually-hidden')
+
+            if ($(field).val() > 0 && $(field).val()) {
+                $(`#${name}-alert-${index}`).addClass('visually-hidden');
                 return 0;
             } else {
-                $(`quantity-alert-${index}`).removeClass('visually-hidden');
+                $(`#${name}-alert-${index}`).removeClass('visually-hidden');
                 return 1;
             }
         }
@@ -264,7 +284,14 @@
             let currAmount = currTr.find('.amount');
             let currQuantity = currTr.find('.quantity');
 
-            currAmount.val(currRate.val() * currQuantity.val());
+            let totalAmount = currRate.val() * currQuantity.val();
+            let tempTotal = totalAmount;
+            totalAmount += currTr.find('.sgst').val() * tempTotal / 100;
+            totalAmount += currTr.find('.ugst').val() * tempTotal / 100;
+            totalAmount += currTr.find('.cgst').val() * tempTotal / 100;
+            totalAmount += currTr.find('.igst').val() * tempTotal / 100;
+
+            currAmount.val(totalAmount);
             changeSubtotal()
         }
 
@@ -293,16 +320,22 @@
 
         $(document).on('change', '.product_option', function() {
             let currTr = $(this).closest('tr');
-            let currRate = currTr.find('.rate');
             let currProduct = product.find(item => item.id == $(this).val());
+            // changeGsts(currTr);
 
-            currRate.val(currProduct.price);
+            currTr.find('.rate').val(currProduct.price);
+            currTr.find('.sgst').val(currProduct.sgst);
+            currTr.find('.ugst').val(currProduct.ugst);
+            currTr.find('.cgst').val(currProduct.cgst);
+            currTr.find('.igst').val(currProduct.igst);
+
+            checkError($(this), 'product')
             changeAmount(currTr)
         });
 
         $(document).on('keyup', '.quantity', function() {
             let currTr = $(this).closest('tr');
-            checkQuantity($(this))
+            checkError($(this), 'quantity')
             changeAmount(currTr)
         });
 

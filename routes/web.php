@@ -10,6 +10,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Models\Employ;
+use App\Models\Product;
 
 //auth
 Route::get('/registration-page', [AuthController::class, 'registrationPage'])->name('registrationPage');

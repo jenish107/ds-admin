@@ -1,10 +1,28 @@
 @extends('layout.mainLayout')
 
 @push('style')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endpush
 
 @section('main')
     <x-layout>
+        <div class="toast-container position-fixed fixed-top p-6">
+            <div class="toast" id="liveToast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-body">
+                    <div class="d-flex gap-4">
+                        <span><i class="fa-solid fa-circle-check fa-lg icon-success"></i></span>
+                        <div class="d-flex flex-column flex-grow-1 gap-2">
+                            <div class="d-flex align-items-center">
+                                <span class="fw-semibold">Your changes were saved</span>
+                                <button type="button" class="btn-close btn-close-sm ms-auto" data-bs-dismiss="toast"
+                                    aria-label="Close"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-body">
                 @if (session('message'))
@@ -14,9 +32,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card">
-
-                            <form class="form-horizontal"
-                                action="{{ isset($invoice) ? route('updateInvoice') : route('addInvoice') }}" method="POST">
+                            <form class="form-horizontal" id="invoice-form" method="POST">
                                 @csrf
                                 @isset($invoice)
                                     @method('PUT')
@@ -25,9 +41,9 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h3 class="card-title">Invoice </h3>
                                     <div class="pe-3 ">
-                                        <button type="button" class="btn btn-info" onclick="history.back();">
+                                        <a href="{{ route('showInvoiceList') }}" class="btn btn-info">
                                             Back
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
 
@@ -101,22 +117,25 @@
 
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="shipping" class="fw-bold">shipping :</label>
-                                            <input style="width: 10rem" class="form-control" type="number" name="shipping"
-                                                id="shipping" value="{{ old('shipping', $invoice->shipping ?? 0) }}" />
+                                            <input style="width: 10rem" class="form-control" type="number"
+                                                name="shipping" id="shipping"
+                                                value="{{ old('shipping', $invoice->shipping ?? 0) }}" />
                                         </div>
 
                                         <div class="d-flex justify-content-end gap-2">
                                             <label for="total" class="fw-bold">total :</label>
-                                            <input style="width: 10rem" class="form-control" type="number" name="total"
-                                                id="total" readonly value="{{ old('total', $invoice->total ?? 0) }}" />
+                                            <input style="width: 10rem" class="form-control" type="number"
+                                                name="total" id="total" readonly
+                                                value="{{ old('total', $invoice->total ?? 0) }}" />
                                         </div>
                                     </div>
 
-                                    <input type="hidden" value="{{ $invoice->id ?? '' }}" name="id" />
+                                    <input type="hidden" value="{{ $invoice->id ?? '' }}" name="invoice_id"
+                                        id="invoice_id" />
                                 </div>
                                 <div class="border-top">
                                     <div class="card-body">
-                                        <button type="submit" class="btn btn-primary">
+                                        <button type="submit" id="primary-button" class="btn btn-primary">
                                             @isset($invoice)
                                                 Update
                                             @else
@@ -138,6 +157,8 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
         let product;
         let invoice = @json($invoice->invoiceItem ?? []);
@@ -158,7 +179,30 @@
                 }
             });
         }
+        $("#invoice-form").submit(function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: "PUT",
+                url: "{{ route('updateCreateInvoice') }}",
+                data: $(this).serialize(),
+                dataType: "json",
+                success: function(response) {
+                    console.log('form is success', response);
+                    $("#invoice_id").val(response.invoice_id);
+                    $('#primary-button').html('update');
+                    const toastLiveExample = document.getElementById("liveToast");
+                    const toast = new bootstrap.Toast(toastLiveExample);
+                    toast.show();
+                },
+                error: function(error) {
+                    console.log("Error --", error);
+                }
+            })
+        })
+
         $(document).ready(function() {
+
             $.ajax({
                 url: '/invoice/get-products',
                 type: 'GET',
@@ -187,7 +231,7 @@
             let currIndex = $('#tbody').children().length;
 
             tr.append(
-                `<td><select name="items[${currIndex}][product_option]" data-index='${currIndex}' class="product_option form-select"></select>
+                `<td><select name="items[${currIndex}][product_option]" data-index='${currIndex}' class="product_option form-select w-full"></select>
                 <div class="text-danger visually-hidden" id="product-alert-${currIndex}">
                     Enter Quantity
                 </div></td>`
@@ -199,16 +243,16 @@
                 `<td><input type="number" style="width: 6rem"  name="items[${currIndex}][rate]" class="rate form-control" readonly value="${item ? item['product']['price'] : 0}" /></td>`
             );
             tr.append(
-                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][sgst]" class="sgst form-control" readonly value="${item ? item['sgst'] : 0}" /></td>`
+                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][sgst]" class="sgst form-control" readonly value="${item ? item['product']['sgst'] : 0}" /></td>`
             );
             tr.append(
-                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][ugst]" class="ugst form-control" readonly value="${item ? item['ugst'] : 0}" /></td>`
+                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][ugst]" class="ugst form-control" readonly value="${item ? item['product']['ugst'] : 0}" /></td>`
             );
             tr.append(
-                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][cgst]" class="cgst form-control" readonly value="${item ? item['cgst'] : 0}" /></td>`
+                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][cgst]" class="cgst form-control" readonly value="${item ? item['product']['cgst'] : 0}" /></td>`
             );
             tr.append(
-                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][igst]" class="igst form-control" readonly value="${item ? item['igst'] : 0}" /></td>`
+                `<td><input type="number" style="width: 4rem"  name="items[${currIndex}][igst]" class="igst form-control" readonly value="${item ? item['product']['igst'] : 0}" /></td>`
             );
 
             tr.append(
@@ -226,6 +270,7 @@
 
             $('#tbody').append(tr);
             toggleDelete();
+            $('.product_option').select2();
         }
 
         function toggleDelete() {
@@ -234,7 +279,8 @@
             } else {
                 if ($('#tbody tr:first td:last').is(':empty')) {
                     $('#tbody tr:first td:last').append(
-                        `<button type="button" class="btn btn-sm btn-danger rounded-3 delete-row">X</button>`)
+                        `<button type="button" class="btn btn-sm btn-danger rounded-3 delete-row">X</button>`
+                    )
                 }
             }
         }
@@ -246,7 +292,6 @@
 
             $('.product_option').each(function() {
                 if (!$(this).val()) {
-                    // alert('Enter item')
                     product = checkError($(this), 'product');
                 }
             })

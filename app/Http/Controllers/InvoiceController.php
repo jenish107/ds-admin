@@ -73,36 +73,36 @@ class InvoiceController extends Controller
         ]);
     }
 
-    public function addInvoice(Request $request)
-    {
-        $validation = $request->validate([
-            'customer_name' => 'required',
-            'customer_email' => 'required',
-            'items' => 'required',
-        ]);
+    // public function addInvoice(Request $request)
+    // {
+    //     $validation = $request->validate([
+    //         'customer_name' => 'required',
+    //         'customer_email' => 'required',
+    //         'items' => 'required',
+    //     ]);
 
-        $invoice = Invoice::create([
-            'customer_name' => $validation['customer_name'],
-            'customer_email' => $validation['customer_email'],
-            'user_id' => Auth::id(),
-            'subtotal' => $request->subtotal,
-            'discount' => $request->discount,
-            'tax' => $request->tax,
-            'shipping' => $request->shipping,
-            'total' => $request->total,
-        ]);
+    //     $invoice = Invoice::create([
+    //         'customer_name' => $validation['customer_name'],
+    //         'customer_email' => $validation['customer_email'],
+    //         'user_id' => Auth::id(),
+    //         'subtotal' => $request->subtotal,
+    //         'discount' => $request->discount,
+    //         'tax' => $request->tax,
+    //         'shipping' => $request->shipping,
+    //         'total' => $request->total,
+    //     ]);
 
-        foreach ($request->items as $item) {
-            InvoiceItem::create([
-                'quantity' => $item['quantity'],
-                'amount' => $item['amount'],
-                'product_id' => $item['product_option'],
-                'invoice_id' => $invoice->id,
-            ]);
-        }
+    //     foreach ($request->items as $item) {
+    //         InvoiceItem::create([
+    //             'quantity' => $item['quantity'],
+    //             'amount' => $item['amount'],
+    //             'product_id' => $item['product_option'],
+    //             'invoice_id' => $invoice->id,
+    //         ]);
+    //     }
 
-        return redirect()->route('showInvoiceList');
-    }
+    //     return response()->json(['success'=>'Product saved successfully.','id'=> $invoice->id]);
+    // }
 
     public function updateInvoice(Request $request)
     {
@@ -111,14 +111,15 @@ class InvoiceController extends Controller
             'customer_email' => 'required',
             'items' => 'required',
         ]);
+
         $user = Auth::user();
         if(empty($user)) return;
 
         $invoice = $user->invoice()->updateOrCreate([
-                'id' => $request->id
+                'id' => $request->invoice_id
             ],[
-            'customer_name' => $validation['customer_name'],
-            'customer_email' => $validation['customer_email'],
+            'customer_name' => $request->customer_name,
+            'customer_email' => $request->customer_email,
             'user_id' => Auth::id(),
             'subtotal' => $request->subtotal,
             'discount' => $request->discount,
@@ -144,7 +145,7 @@ class InvoiceController extends Controller
 
         $invoice->invoiceItem()->whereIn('id',array_diff($oldId,$newId))->delete();
 
-        return redirect()->route('showInvoiceList');
+        return response()->json(['success'=>'Product saved successfully.','invoice_id'=>$invoice->id]);
     }
 
     public function getProduct()
@@ -156,5 +157,4 @@ class InvoiceController extends Controller
     {
         return Invoice::where('id', $id)->delete();
     }
-    
 }

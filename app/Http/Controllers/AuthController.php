@@ -64,11 +64,18 @@ class AuthController extends Controller
             return back()->with('error', 'user is already exist');
         }
 
-        session(['userData' => $data]);
-        session(['otp' => $otp]);
+        $user = User::create([
+            'userName' => $data['userName'],
+            'email' => $data['email'],
+            'password' => $data['password'],
+        ]);
+        
+        // session(['userData' => $data]);
+        // session(['otp' => $otp]);
 
-        dispatch(new SendEmailJob($data, $otp));
-
+        // dispatch(new SendEmailJob($data, $otp));
+        Auth::login($user);
+        return redirect()->route('dashboardPage');
         return redirect()->route('otpPage');
     }
 

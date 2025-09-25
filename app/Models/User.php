@@ -17,6 +17,8 @@ class User extends Authenticatable
         'zipcode',
         'number',
         'image',
+        'first_name',
+        'last_name',
     ];
 
     public function invoice()

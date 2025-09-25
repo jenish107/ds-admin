@@ -239,6 +239,11 @@
                                     Data</span></a>
                         </li>
                         <li class="sidebar-item">
+                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ route('user.index') }}"
+                                aria-expanded="false"><i class="mdi mdi-pencil"></i><span class="hide-menu">User
+                                    Data (ajax)</span></a>
+                        </li>
+                        <li class="sidebar-item">
                             <a href="form-basic.html" class="sidebar-link"><i class="mdi mdi-note-outline"></i><span
                                     class="hide-menu"> Roles
                                 </span></a>

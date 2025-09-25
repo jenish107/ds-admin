@@ -8,6 +8,7 @@ use App\Http\Controllers\EmployController;
 use App\Http\Controllers\FamilyController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserAjaxController;
 use App\Http\Controllers\UserController;
 use App\Models\Employ;
 use App\Models\Product;
@@ -89,8 +90,7 @@ Route::middleware('IsLogin')->group(function () {
             Route::get('/list', 'invoiceList')->name('showInvoiceList');
             Route::get('/get-list', 'getAllInvoice')->name('getAllInvoice');
             Route::get('/form/{id?}', 'showInvoiceForm')->name('showInvoiceForm');
-            Route::post('/add', 'addInvoice')->name('addInvoice');
-            Route::put('/update', 'updateInvoice')->name('updateInvoice');
+            Route::put('/update-or-create', 'updateInvoice')->name('updateCreateInvoice');
             Route::delete('/delete/{id}', 'deleteInvoice')->name('deleteInvoice');
         });
     });
@@ -104,6 +104,17 @@ Route::middleware('IsLogin')->group(function () {
             Route::post('/add', 'addProduct')->name('addProduct');
             Route::put('/update', 'updateProduct')->name('updateProduct');
             Route::delete('/delete/{id}', 'deleteProduct')->name('deleteProduct');
+        });
+    });
+
+    //user(ajax) crud 
+    Route::controller(UserAjaxController::class)->group(function(){
+        Route::group(['prefix'=>'/user-ajax','as'=>'user.'], function(){
+           Route::get('','index')->name('index'); 
+           Route::get('/list','list')->name('list'); 
+           Route::get('/{id}','show')->name('show'); 
+           Route::put('/','editCreate')->name('edit.create'); 
+           Route::delete('/{id}','destroy')->name('destroy'); 
         });
     });
 });

@@ -3,6 +3,7 @@
 @push('style')
     <link rel="stylesheet"
         href="{{ asset('assets/extra-libs/DataTables/DataTables-1.10.16/css/jquery.dataTables.min.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
 @endpush
 
 @section('main')
@@ -34,7 +35,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form action="" id="model-form" class="d-flex flex-column">
+                        <form id="model-form" class="d-flex flex-column">
                             @csrf
                             <label for="user_name">User Name</label>
                             <input type="text" name="userName" id="user_name">
@@ -96,48 +97,112 @@
 
     <script>
         let table;
-        $(document).ready(function() {
-            table = $('#data-table').DataTable({
-                ajax: {
-                    url: "{{ route('user.list') }}",
-                    type: 'GET'
-                },
-                columns: [{
-                        data: 'id',
-                        name: 'id'
-                    },
-                    {
-                        data: 'userName',
-                        name: 'userName'
-                    },
-                    {
-                        data: 'first_name',
-                        name: 'first_name'
-                    },
-                    {
-                        data: 'last_name',
-                        name: 'last_name'
-                    },
-                    {
-                        data: 'email',
-                        name: 'email'
-                    },
-                    {
-                        data: 'zipcode',
-                        name: 'zipcode'
-                    },
-                    {
-                        data: 'number',
-                        name: 'number'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action'
-                    }
-                ]
-            })
+
+        $(document).ready(async function() {
+            var asyncData;
+            getdata();
+
+            function getdata() {
+                const getPeople = async () => {
+                    const data = await fetch("{{ route('user.list') }}");
+                    const jsondata = await data.json();
+                    asyncData = jsondata.data;
+                    initialiseTable();
+                    return jsondata;
+                };
+                getPeople();
+            }
+
+            function initialiseTable() {
+                table = $("#data-table").DataTable({
+                    data: asyncData,
+                    columns: [{
+                            data: "id",
+                        },
+                        {
+                            data: 'userName',
+                        },
+                        {
+                            data: 'first_name',
+                        },
+                        {
+                            data: 'last_name',
+                        },
+                        {
+                            data: 'email',
+                        },
+                        {
+                            data: 'zipcode',
+                        },
+                        {
+                            data: 'number',
+                        },
+                        {
+                            data: 'action',
+                        }
+                    ]
+                });
+            }
+        })
+        $(document).on('click', '.edit', async function() {
+            let response = await fetch($(this)?.data('url'), {
+                method: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            let jsondata = await response.json();
+
+            $('#user_name').val(jsondata.userName);
+            $('#email').val(jsondata.email);
+            $('#number').val(jsondata.number);
+            $('#zipcode').val(jsondata.zipcode);
+            $('#first_name').val(jsondata.first_name);
+            $('#last_name').val(jsondata.last_name);
+            $('#password').val(jsondata.password);
+            $('#user_id').val(jsondata.id);
+            $('#update').html('Update');
         })
 
+        document.getElementById('model-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            let form = e.target;
+            let formData = new FormData(form);
+
+            try {
+                let response = await fetch("{{ route('user.save') }}", {
+                    method: "POST", // or "POST" + formData.append("_method","PUT") if updating
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
+                        "Accept": "application/json"
+                        // ❌ don't set Content-Type here, browser will handle it for FormData
+                    },
+                    // body: formData
+                });
+
+                // debug if response is not JSON
+                let text = await response.json();
+                console.log("Raw Response:", text);
+
+                let data = {};
+                try {
+                    data = JSON.parse(text);
+                    console.log("Parsed JSON:", data);
+                } catch (err) {
+                    console.error("Response is not JSON:", err);
+                }
+
+                const toastLiveExample = document.getElementById("liveToast");
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
+
+            } catch (error) {
+                console.error("Error in submit form", error);
+            }
+
+            // table.ajax.reload(); // if you use datatables
+        });
         $(document).on('click', '.delete', function() {
             Swal.fire({
                 title: 'are you sure to delete it',
@@ -149,56 +214,18 @@
                     loader: 'custom-loader',
                 },
                 loaderHtml: '<div class="spinner-border text-primary"></div>',
-                preConfirm: () => {
-                    $.ajax({
-                        url: $(this)?.data('url'),
-                        type: 'DELETE',
-                        success: function(response) {
-                            console.log('Data is deleted', response);
-                            table.ajax.reload();
-                        },
-                        data: {
-                            "_token": "{{ csrf_token() }}"
+                preConfirm: async () => {
+                    let response = await fetch($(this)?.data('url'), {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         }
                     })
+                    // table.ajax.reload();
                 },
             })
         })
-        $(document).on('click', '.edit', function() {
 
-            $.ajax({
-                url: $(this)?.data('url'),
-                type: "POST",
-                success: function(response) {
-                    $('#user_name').val(response.userName);
-                    $('#email').val(response.email);
-                    $('#number').val(response.number);
-                    $('#zipcode').val(response.zipcode);
-                    $('#first_name').val(response.first_name);
-                    $('#last_name').val(response.last_name);
-                    $('#password').val(response.password);
-                    $('#user_id').val(response.id);
-                    $('#update').html('Update');
-                }
-            })
-        })
-        $('#model-form').submit(function(e) {
-            e.preventDefault();
-            console.log('form submit')
-
-            $.ajax({
-                url: "{{ route('user.save') }}",
-                type: "PUT",
-                data: $(this).serialize(),
-                success: function(response) {
-                    console.log("Data is updated");
-                    const toastLiveExample = document.getElementById("liveToast");
-                    const toast = new bootstrap.Toast(toastLiveExample);
-                    toast.show();
-                    table.ajax.reload();
-                }
-            })
-        })
         $('#new-user').click(function() {
             $('#user_name').val("");
             $('#email').val("");

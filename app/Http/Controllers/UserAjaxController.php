@@ -26,8 +26,8 @@ class UserAjaxController extends Controller
                 "zipcode"=>$user->zipcode,
                 'action'=>"
                     <div>
-                        <button class='edit btn btn-info' data-bs-toggle='modal' data-bs-target='#exampleModal' data-id=".$user->id.">edit</button>
-                        <button class='delete btn btn-danger' data-id=".$user->id.">delete</button>
+                        <button class='edit btn btn-info' data-bs-toggle='modal' data-bs-target='#exampleModal' data-url=". route('user.show',['id'=> $user->id]) .">edit</button>
+                        <button class='delete btn btn-danger' data-url=".route('user.destroy',['id'=> $user->id]).">delete</button>
                     </div>
                 ",
             ];
@@ -37,7 +37,12 @@ class UserAjaxController extends Controller
             'data'=>$data,
         ]);
     }
-    public function editCreate(Request $request){
+    public function save(Request $request){
+
+        return response()->json([
+            'success' => true,
+            'data'    => $request->all()
+        ]); 
        $validate = $request->validate([
         'userName'   => 'required',
         'email'      => 'required',
@@ -48,7 +53,7 @@ class UserAjaxController extends Controller
         'last_name'  => 'required',
        ]);
        
-        User::updateOrCreate(
+        $user = User::updateOrCreate(
             [
                 'id' => $request->input('user_id'),
             ],
@@ -63,7 +68,7 @@ class UserAjaxController extends Controller
             ]
         );
 
-        return response()->json(['message'=>'data is updated']);  
+        return response()->json(['message'=>'data is updated','user'=>$user]);  
     }
 
     public function show($id){

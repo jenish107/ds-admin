@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employ;
 use App\Models\Family;
+use App\Models\Company;
 use Illuminate\Http\Request;
 
 class FamilyController extends Controller
@@ -103,6 +104,10 @@ class FamilyController extends Controller
         ]);
 
         return redirect()->route('showAllFamily', $request->input('parentId'));
+    }
+
+    public function tree(){
+        return Company::with('department.company')->get();
     }
 
     public function deleteFamily($id)
